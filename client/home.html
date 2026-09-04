@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>LearnHUB — Online Learning Platform</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{
+            font-family:Inter,system-ui,sans-serif;
+            background:#0d0f14;
+            color:#fff;
+            line-height:1.6;
+        }
+        a{text-decoration:none;color:inherit}
+        .container{
+            width:90%;
+            max-width:1300px;
+            margin:0 auto;
+        }
+
+        /* Header */
+        header{
+            padding:24px 0;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+        }
+        .logo{
+            font-size:1.5rem;
+            font-weight:700;
+        }
+        nav{
+            display:flex;
+            gap:28px;
+            opacity:0.8;
+        }
+        nav a:hover{opacity:1}
+
+        /* Hero */
+        .hero{
+            padding:40px 0 20px;
+        }
+        .hero h1{
+            font-size:2.4rem;
+            font-weight:800;
+            margin-bottom:12px;
+        }
+        .hero p{
+            max-width:600px;
+            opacity:0.75;
+            font-size:1.05rem;
+        }
+
+        /* Category Cards */
+        .categories{
+            margin-top:32px;
+            display:grid;
+            grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+            gap:24px;
+        }
+        .category{
+            background:#14171f;
+            border:1px solid #1f222b;
+            padding:24px;
+            border-radius:12px;
+            display:flex;
+            flex-direction:column;
+            gap:12px;
+        }
+        .category-title{
+            font-size:1.3rem;
+            font-weight:700;
+        }
+        .category-desc{
+            opacity:0.75;
+            font-size:0.95rem;
+        }
+
+        /* Course Sections */
+        .section{
+            padding:60px 0 20px;
+        }
+        .section h2{
+            font-size:1.8rem;
+            font-weight:700;
+            margin-bottom:24px;
+        }
+        .course-grid{
+            display:grid;
+            grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+            gap:24px;
+        }
+        .course{
+            background:#14171f;
+            border:1px solid #1f222b;
+            border-radius:12px;
+            overflow:hidden;
+        }
+        .course img{
+            width:100%;
+            height:160px;
+            object-fit:cover;
+        }
+        .course-content{
+            padding:16px;
+        }
+        .course-title{
+            font-size:1.1rem;
+            font-weight:600;
+            margin-bottom:6px;
+        }
+        .course-instructor{
+            font-size:0.85rem;
+            opacity:0.7;
+            margin-bottom:6px;
+        }
+        .course-rating{
+            font-size:0.85rem;
+            margin-bottom:6px;
+            opacity:0.8;
+        }
+        .course-price{
+            font-size:1rem;
+            font-weight:600;
+            margin-top:6px;
+        }
+
+        /* Footer */
+        footer{
+            padding:40px 0;
+            text-align:center;
+            opacity:0.6;
+            font-size:0.9rem;
+            border-top:1px solid #1f222b;
+        }
+    </style>
+
+</head>
+<body>
+
+<header class="container">
+    <div class="logo">LearnHUB</div>
+    <nav>
+        <a href="#categories">Categories</a>
+        <a href="#trending">Trending</a>
+        <a href="#new">New</a>
+        <a href="#featured">Featured</a>
+    </nav>
+</header>
+
+<section class="hero container">
+    <h1>Learn essential skills for your career and life</h1>
+    <p>Explore curated courses in AI, engineering, certifications, and more — all in a sleek dark interface built for serious learners.</p>
+</section>
+
+<section id="categories" class="categories container">
+    <div class="category">
+        <div class="category-title">Generative AI</div>
+        <div class="category-desc">Build AI apps, agents, workflows, and automation.</div>
+    </div>
+    <div class="category">
+        <div class="category-title">IT Certifications</div>
+        <div class="category-desc">Prep for industry‑recognized exams with expert instructors.</div>
+    </div>
+    <div class="category">
+        <div class="category-title">Engineering</div>
+        <div class="category-desc">Deep‑dive into software, cloud, and system design.</div>
+    </div>
+</section>
+
+<!-- Trending Courses -->
+<section id="trending" class="section container">
+    <h2>Trending Courses</h2>
+    <div class="course-grid">
+
+        <div class="course">
+            <img src="https://picsum.photos/seed/pmp/400/240">
+            <div class="course-content">
+                <div class="course-title">PMP Exam Prep 2026</div>
+                <div class="course-instructor">TIA Training · Andrew Ramdayal</div>
+                <div class="course-rating">⭐ 4.7 · 193,990 ratings</div>
+                <div class="course-price">$129.99</div>
+            </div>
+        </div>
+
+        <div class="course">
+            <img src="https://picsum.photos/seed/claude/400/240">
+            <div class="course-content">
+                <div class="course-title">Claude Code Masterclass</div>
+                <div class="course-instructor">Prof. Ryan Ahmed</div>
+                <div class="course-rating">⭐ 4.6 · 6,031 ratings</div>
+                <div class="course-price">$39.99</div>
+            </div>
+        </div>
+
+        <div class="course">
+            <img src="https://picsum.photos/seed/aicoder/400/240">
+            <div class="course-content">
+                <div class="course-title">AI Coding Agents</div>
+                <div class="course-instructor">Ligency · Ed Donner</div>
+                <div class="course-rating">⭐ 4.7 · 8,946 ratings</div>
+                <div class="course-price">$49.99</div>
+            </div>
+        </div>
+
+        <div class="course">
+            <img src="https://picsum.photos/seed/mcp/400/240">
+            <div class="course-content">
+                <div class="course-title">Agent & MCP Engineering</div>
+                <div class="course-instructor">Ed Donner · Ligency</div>
+                <div class="course-rating">⭐ 4.7 · 44,416 ratings</div>
+                <div class="course-price">$19.99</div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- New Courses -->
+<section id="new" class="section container">
+    <h2>New Courses</h2>
+    <div class="course-grid">
+
+        <div class="course">
+            <img src="https://picsum.photos/seed/llm/400/240">
+            <div class="course-content">
+                <div class="course-title">Intro to LLM Engineering</div>
+                <div class="course-instructor">Sarah Kim</div>
+                <div class="course-rating">⭐ 4.8 · 1,204 ratings</div>
+                <div class="course-price">$29.99</div>
+            </div>
+        </div>
+
+        <div class="course">
+            <img src="https://picsum.photos/seed/nextjs/400/240">
+            <div class="course-content">
+                <div class="course-title">Next.js Full‑Stack Bootcamp</div>
+                <div class="course-instructor">Dev Academy</div>
+                <div class="course-rating">⭐ 4.6 · 3,912 ratings</div>
+                <div class="course-price">$59.99</div>
+            </div>
+        </div>
+
+        <div class="course">
+            <img src="https://picsum.photos/seed/cloud/400/240">
+            <div class="course-content">
+                <div class="course-title">Cloud Fundamentals</div>
+                <div class="course-instructor">James Patel</div>
+                <div class="course-rating">⭐ 4.5 · 2,118 ratings</div>
+                <div class="course-price">$24.99</div>
+            </div>
+        </div>
+
+        <div class="course">
+            <img src="https://picsum.photos/seed/python/400/240">
+            <div class="course-content">
+                <div class="course-title">Python for Data Engineering</div>
+                <div class="course-instructor">DataWorks</div>
+                <div class="course-rating">⭐ 4.7 · 5,002 ratings</div>
+                <div class="course-price">$34.99</div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- Featured Courses -->
+<section id="featured" class="section container">
+    <h2>Featured Courses</h2>
+    <div class="course-grid">
+
+        <div class="course">
+            <img src="https://picsum.photos/seed/webdev/400/240">
+            <div class="course-content">
+                <div class="course-title">Complete Web Developer Roadmap</div>
+                <div class="course-instructor">CodeLab</div>
+                <div class="course-rating">⭐ 4.8 · 120,442 ratings</div>
+                <div class="course-price">$89.99</div>
+            </div>
+        </div>
+
+        <div class="course">
+            <img src="https://picsum.photos/seed/ml/400/240">
+            <div class="course-content">
+                <div class="course-title">Machine Learning A‑Z</div>
+                <div class="course-instructor">AI Academy</div>
+                <div class="course-rating">⭐ 4.7 · 98,221 ratings</div>
+                <div class="course-price">$49.99</div>
+            </div>
+        </div>
+
+        <div class="course">
+            <img src="https://picsum.photos/seed/cyber/400/240">
+            <div class="course-content">
+                <div class="course-title">Cybersecurity Essentials</div>
+                <div class="course-instructor">SecureTech</div>
+                <div class="course-rating">⭐ 4.6 · 44,912 ratings</div>
+                <div class="course-price">$39.99</div>
+            </div>
+        </div>
+
+        <div class="course">
+            <img src="https://picsum.photos/seed/uiux/400/240">
+            <div class="course-content">
+                <div class="course-title">UI/UX Design Masterclass</div>
+                <div class="course-instructor">DesignHub</div>
+                <div class="course-rating">⭐ 4.8 · 65,331 ratings</div>
+                <div class="course-price">$54.99</div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<footer>
+    © <span id="year"></span> LearnHUB
+</footer>
+
+<script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>LearnHUB — Learning Paths</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{
+            font-family:Inter,system-ui,sans-serif;
+            background:#0d0f14;
+            color:#fff;
+            line-height:1.6;
+        }
+        a{text-decoration:none;color:inherit}
+        .container{
+            width:90%;
+            max-width:1300px;
+            margin:0 auto;
+        }
+
+        /* Header */
+        header{
+            padding:24px 0;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+        }
+        .logo{
+            font-size:1.5rem;
+            font-weight:700;
+        }
+        nav{
+            display:flex;
+            gap:24px;
+            opacity:0.8;
+        }
+        nav a:hover{opacity:1}
+
+        /* Hero */
+        .hero{
+            padding:40px 0 20px;
+        }
+        .hero h1{
+            font-size:2.4rem;
+            font-weight:800;
+            margin-bottom:12px;
+        }
+        .hero p{
+            max-width:700px;
+            opacity:0.75;
+            font-size:1.05rem;
+        }
+
+        /* Filters */
+        .filters{
+            margin:30px 0;
+            display:flex;
+            gap:12px;
+            flex-wrap:wrap;
+        }
+        .filter-btn{
+            padding:10px 18px;
+            background:#14171f;
+            border:1px solid #1f222b;
+            border-radius:8px;
+            font-size:0.9rem;
+            cursor:pointer;
+            transition:0.2s;
+        }
+        .filter-btn.active,
+        .filter-btn:hover{
+            background:#1f222b;
+        }
+
+        /* Paths Grid */
+        .paths-grid{
+            display:grid;
+            grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+            gap:24px;
+            padding-bottom:60px;
+        }
+        .path-card{
+            background:#14171f;
+            border:1px solid #1f222b;
+            border-radius:12px;
+            padding:24px;
+            display:flex;
+            flex-direction:column;
+            gap:14px;
+        }
+        .path-title{
+            font-size:1.3rem;
+            font-weight:700;
+        }
+        .path-desc{
+            opacity:0.75;
+            font-size:0.95rem;
+        }
+        .tags{
+            display:flex;
+            flex-wrap:wrap;
+            gap:8px;
+        }
+        .tag{
+            background:#1f222b;
+            padding:6px 10px;
+            border-radius:6px;
+            font-size:0.8rem;
+            opacity:0.85;
+        }
+        .path-meta{
+            font-size:0.85rem;
+            opacity:0.7;
+            margin-top:6px;
+        }
+
+        /* Footer */
+        footer{
+            padding:40px 0;
+            text-align:center;
+            opacity:0.6;
+            font-size:0.9rem;
+            border-top:1px solid #1f222b;
+        }
+    </style>
+
+</head>
+<body>
+
+<header class="container">
+    <div class="logo">LearnHUB</div>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="paths.html">Paths</a>
+    </nav>
+</header>
+
+<section class="hero container">
+    <h1>Pick your path</h1>
+    <p>Curated course sequences that take you from fundamentals to production‑ready — no guesswork on what to learn next.</p>
+</section>
+
+<div class="filters container">
+    <button class="filter-btn active">All paths</button>
+    <button class="filter-btn">Frontend</button>
+    <button class="filter-btn">Backend</button>
+    <button class="filter-btn">Machine Learning</button>
+    <button class="filter-btn">Full‑Stack</button>
+</div>
+
+<section class="paths-grid container">
+
+    <!-- Frontend -->
+    <div class="path-card" data-type="frontend">
+        <div class="path-title">Frontend Development: React & TypeScript Engineer</div>
+        <div class="path-desc">Master the modern frontend stack — React, TypeScript, styled‑components, state management, and performance.</div>
+
+        <div class="tags">
+            <span class="tag">React 18</span>
+            <span class="tag">TypeScript</span>
+            <span class="tag">Vite</span>
+            <span class="tag">Styled‑Components</span>
+            <span class="tag">TanStack Query</span>
+            <span class="tag">Testing Library</span>
+        </div>
+
+        <div class="path-meta">7 courses · 28h total · 214 students</div>
+    </div>
+
+    <!-- Backend -->
+    <div class="path-card" data-type="backend">
+        <div class="path-title">Backend Development: Node.js & PostgreSQL Engineer</div>
+        <div class="path-desc">Build APIs that last — Node.js, Express, raw PostgreSQL, auth, and deployment. No ORMs, no magic.</div>
+
+        <div class="tags">
+            <span class="tag">Node.js</span>
+            <span class="tag">Express</span>
+            <span class="tag">PostgreSQL</span>
+            <span class="tag">Raw SQL</span>
+            <span class="tag">JWT Auth</span>
+            <span class="tag">REST</span>
+            <span class="tag">Docker</span>
+        </div>
+
+        <div class="path-meta">6 courses · 32h total · 186 students</div>
+    </div>
+
+    <!-- Machine Learning -->
+    <div class="path-card" data-type="ml">
+        <div class="path-title">Machine Learning: ML Engineer — Python to Production</div>
+        <div class="path-desc">Go from Python basics to deploying real models. Covers data wrangling, classical ML, neural networks, and model serving.</div>
+
+        <div class="tags">
+            <span class="tag">Python</span>
+            <span class="tag">NumPy</span>
+            <span class="tag">Pandas</span>
+            <span class="tag">scikit‑learn</span>
+            <span class="tag">PyTorch</span>
+            <span class="tag">FastAPI</span>
+            <span class="tag">Model Serving</span>
+        </div>
+
+        <div class="path-meta">8 courses · 44h total · 97 students</div>
+    </div>
+
+    <!-- Full‑Stack -->
+    <div class="path-card" data-type="fullstack">
+        <div class="path-title">Full‑Stack: Full‑Stack Product Engineer</div>
+        <div class="path-desc">Frontend to backend deployment — the complete picture. Build and ship a production‑grade full‑stack app.</div>
+
+        <div class="tags">
+            <span class="tag">React</span>
+            <span class="tag">TypeScript</span>
+            <span class="tag">Node.js</span>
+            <span class="tag">PostgreSQL</span>
+            <span class="tag">REST</span>
+            <span class="tag">Auth</span>
+            <span class="tag">Docker</span>
+            <span class="tag">CI/CD</span>
+        </div>
+
+        <div class="path-meta">10 courses · 52h total · 142 students</div>
+    </div>
+
+</section>
+
+<footer>
+    © <span id="year"></span> LearnHUB
+</footer>
+
+<script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+
+</body>
+</html>
