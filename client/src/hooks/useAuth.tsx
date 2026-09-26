@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { useAuthStorage } from './useAuthStorage'
 import { parseJwtPayload } from '../utils/jwt'
 import type { AccessTokenPayload, AuthUser } from '../types/auth'
@@ -38,8 +38,13 @@ export function AuthProvider({ children }: AuthProviderProps): React.ReactElemen
     if (!token) return null
     const payload = parseJwtPayload<AccessTokenPayload>(token)
     if (!payload) return null
+    if (payload.exp * 1000 <= Date.now()) return null
     return { userId: payload.sub, role: payload.role }
   }, [token])
+
+  useEffect(() => {
+    if (token && !user) logout()
+  }, [token, user, logout])
 
   const value = useMemo<AuthContextValue>(
     () => ({ user, token, isAuthenticated: user !== null, login, logout }),

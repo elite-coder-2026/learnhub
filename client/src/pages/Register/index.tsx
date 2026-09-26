@@ -1,10 +1,12 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import * as S from './Register.styles'
 import { useRegister } from '../../hooks/useRegister'
+import { useAuth } from '../../hooks/useAuth'
 import type { UserRole } from '../../types/auth'
 
 interface RegisterProps {
-  onSuccess?: () => void
+  redirectTo?: string
   loginHref?: string
 }
 
@@ -63,7 +65,7 @@ function validate(form: FormState): FieldErrors {
 }
 
 const Register: React.FC<RegisterProps> = ({
-  onSuccess,
+  redirectTo = '/dashboard',
   loginHref = '/login',
 }) => {
   const [form, setForm] = useState<FormState>(INITIAL_FORM)
@@ -73,6 +75,8 @@ const Register: React.FC<RegisterProps> = ({
 
   const roleRef = useRef<HTMLDivElement>(null)
   const register = useRegister()
+  const auth = useAuth()
+  const navigate = useNavigate()
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent): void => {
@@ -85,10 +89,11 @@ const Register: React.FC<RegisterProps> = ({
   }, [])
 
   useEffect(() => {
-    if (register.isSuccess && onSuccess) {
-      onSuccess()
+    if (register.isSuccess) {
+      auth.login(register.data.token)
+      navigate(redirectTo, { replace: true })
     }
-  }, [register.isSuccess, onSuccess])
+  }, [register.isSuccess, register.data, auth, navigate, redirectTo])
 
   const selectedRoleLabel = useMemo<string>(
     () =>

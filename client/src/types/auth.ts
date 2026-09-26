@@ -1,4 +1,4 @@
-export type UserRole = 'student' | 'instructor'
+export type UserRole = 'student' | 'instructor' | 'admin'
 
 export interface RegisterRequest {
   email: string
@@ -13,9 +13,20 @@ export interface RegisterResult {
   userId: string
 }
 
+export interface LoginRequest {
+  email: string
+  password: string
+}
+
+export interface LoginResult {
+  token: string
+  userId: string
+}
+
 export interface AccessTokenPayload {
   sub: string
   role: UserRole
+  exp: number
 }
 
 export interface AuthUser {

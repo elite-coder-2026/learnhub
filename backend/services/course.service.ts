@@ -1,3 +1,4 @@
+import { PoolClient } from 'pg'
 import { pool } from '../config/db'
 import * as courseQueries from '../queries/course.query'
 import * as lessonQueries from '../queries/lesson.query'
@@ -19,53 +20,83 @@ import {
 } from '../types/course.type'
 import { NotFoundError, UnauthorizedError, ValidationError } from '../utils/errors'
 
-export const createCourse = async (
-  instructorId: string,
-  input: CreateCourseInput
-): Promise<CourseWithStructure> => {
-  if (!input.title.trim()) throw new ValidationError('Course title is required')
-  for (const courseModule of input.modules) {
-    if (!courseModule.title.trim()) throw new ValidationError('Module title is required')
-    for (const lesson of courseModule.lessons) {
-      if (!lesson.title.trim()) throw new ValidationError('Lesson title is required')
-    }
-  }
-
+const withTransaction = async <T>(fn: (client: PoolClient) => Promise<T>): Promise<T> => {
   const client = await pool.connect()
   try {
     await client.query('BEGIN')
-
-    const course = await courseQueries.insertCourse(client, instructorId, input.title, input.description)
-
-    const modules: ModuleWithLessons[] = []
-    for (let moduleIndex = 0; moduleIndex < input.modules.length; moduleIndex++) {
-      const moduleInput = input.modules[moduleIndex]
-      const module = await courseQueries.insertModule(client, course.id, moduleInput.title, moduleIndex)
-
-      const lessons = []
-      for (let lessonIndex = 0; lessonIndex < moduleInput.lessons.length; lessonIndex++) {
-        const lessonInput = moduleInput.lessons[lessonIndex]
-        const lesson = await courseQueries.insertLesson(
-          client,
-          module.id,
-          lessonInput.title,
-          lessonInput.contentUrl,
-          lessonIndex
-        )
-        lessons.push(lesson)
-      }
-
-      modules.push({ ...module, lessons })
-    }
-
+    const result = await fn(client)
     await client.query('COMMIT')
-    return { ...course, modules }
+    return result
   } catch (error) {
-    await client.query('ROLLBACK')
+    try {
+      await client.query('ROLLBACK')
+    } catch (rollbackError) {
+      console.error('Rollback failed:', rollbackError)
+    }
     throw error
   } finally {
     client.release()
   }
+}
+
+const validateCreateCourseInput = (input: CreateCourseInput): void => {
+  if (!input.title.trim()) throw new ValidationError('Course title is required')
+  if (!Array.isArray(input.modules)) throw new ValidationError('Modules are required')
+
+  for (const courseModule of input.modules) {
+    if (!courseModule.title.trim()) throw new ValidationError('Module title is required')
+    if (!Array.isArray(courseModule.lessons)) throw new ValidationError('Lessons are required')
+    for (const lesson of courseModule.lessons) {
+      if (!lesson.title.trim()) throw new ValidationError('Lesson title is required')
+    }
+  }
+}
+
+const insertModuleWithLessons = async (
+    client: PoolClient,
+    courseId: string,
+    moduleInput: CreateCourseInput['modules'][number],
+    moduleIndex: number
+): Promise<ModuleWithLessons> => {
+  const module = await courseQueries.insertModule(client, courseId, moduleInput.title.trim(), moduleIndex)
+
+  const lessons: Lesson[] = []
+  for (let lessonIndex = 0; lessonIndex < moduleInput.lessons.length; lessonIndex++) {
+    const lessonInput = moduleInput.lessons[lessonIndex]
+    const lesson = await courseQueries.insertLesson(
+        client,
+        module.id,
+        lessonInput.title.trim(),
+        lessonInput.contentUrl,
+        lessonIndex
+    )
+    lessons.push(lesson)
+  }
+
+  return { ...module, lessons }
+}
+
+export const createCourse = async (
+    instructorId: string,
+    input: CreateCourseInput
+): Promise<CourseWithStructure> => {
+  validateCreateCourseInput(input)
+
+  return withTransaction(async (client) => {
+    const course = await courseQueries.insertCourse(
+        client,
+        instructorId,
+        input.title.trim(),
+        input.description?.trim()
+    )
+
+    const modules: ModuleWithLessons[] = []
+    for (let moduleIndex = 0; moduleIndex < input.modules.length; moduleIndex++) {
+      modules.push(await insertModuleWithLessons(client, course.id, input.modules[moduleIndex], moduleIndex))
+    }
+
+    return { ...course, modules }
+  })
 }
 
 export const getAnalyticsForInstructor = async (instructorId: string): Promise<CourseAnalytics[]> => {
@@ -131,39 +162,39 @@ export const getDownloadManifest = async (studentId: string, courseId: string): 
 }
 
 export const updateCourse = async (
-  instructorId: string,
-  courseId: string,
-  input: UpdateCourseInput
+    instructorId: string,
+    courseId: string,
+    input: UpdateCourseInput
 ): Promise<Course> => {
   if (!input.title.trim()) throw new ValidationError('Course title is required')
   await assertInstructorOwnsCourse(instructorId, courseId)
 
-  const updated = await courseQueries.updateCourse(courseId, input.title, input.description)
+  const updated = await courseQueries.updateCourse(courseId, input.title.trim(), input.description?.trim())
   if (!updated) throw new NotFoundError(`Course ${courseId} not found`)
   return updated
 }
 
 export const addModule = async (
-  instructorId: string,
-  courseId: string,
-  input: AddModuleInput
+    instructorId: string,
+    courseId: string,
+    input: AddModuleInput
 ): Promise<Module> => {
   if (!input.title.trim()) throw new ValidationError('Module title is required')
   await assertInstructorOwnsCourse(instructorId, courseId)
 
   const position = await courseQueries.findNextModulePosition(courseId)
-  return courseQueries.addModule(courseId, input.title, position)
+  return courseQueries.addModule(courseId, input.title.trim(), position)
 }
 
 export const updateModule = async (
-  instructorId: string,
-  moduleId: string,
-  input: UpdateModuleInput
+    instructorId: string,
+    moduleId: string,
+    input: UpdateModuleInput
 ): Promise<Module> => {
   if (!input.title.trim()) throw new ValidationError('Module title is required')
   await assertInstructorOwnsModule(instructorId, moduleId)
 
-  const updated = await courseQueries.updateModule(moduleId, input.title, input.position)
+  const updated = await courseQueries.updateModule(moduleId, input.title.trim(), input.position)
   if (!updated) throw new NotFoundError(`Module ${moduleId} not found`)
   return updated
 }
@@ -174,26 +205,26 @@ export const deleteModule = async (instructorId: string, moduleId: string): Prom
 }
 
 export const addLesson = async (
-  instructorId: string,
-  moduleId: string,
-  input: CreateLessonInput
+    instructorId: string,
+    moduleId: string,
+    input: CreateLessonInput
 ): Promise<Lesson> => {
   if (!input.title.trim()) throw new ValidationError('Lesson title is required')
   await assertInstructorOwnsModule(instructorId, moduleId)
 
   const position = await lessonQueries.findNextLessonPosition(moduleId)
-  return lessonQueries.addLesson(moduleId, input.title, input.contentUrl, position)
+  return lessonQueries.addLesson(moduleId, input.title.trim(), input.contentUrl, position)
 }
 
 export const updateLesson = async (
-  instructorId: string,
-  lessonId: string,
-  input: UpdateLessonInput
+    instructorId: string,
+    lessonId: string,
+    input: UpdateLessonInput
 ): Promise<Lesson> => {
   if (!input.title.trim()) throw new ValidationError('Lesson title is required')
   await assertInstructorOwnsLesson(instructorId, lessonId)
 
-  const updated = await lessonQueries.updateLesson(lessonId, input.title, input.contentUrl, input.position)
+  const updated = await lessonQueries.updateLesson(lessonId, input.title.trim(), input.contentUrl, input.position)
   if (!updated) throw new NotFoundError(`Lesson ${lessonId} not found`)
   return updated
 }
@@ -204,9 +235,9 @@ export const deleteLesson = async (instructorId: string, lessonId: string): Prom
 }
 
 export const bulkAddLessons = async (
-  instructorId: string,
-  moduleId: string,
-  items: CreateLessonInput[]
+    instructorId: string,
+    moduleId: string,
+    items: CreateLessonInput[]
 ): Promise<Lesson[]> => {
   if (items.length === 0) throw new ValidationError('At least one lesson is required')
   for (const item of items) {
@@ -216,30 +247,26 @@ export const bulkAddLessons = async (
 
   const startPosition = await lessonQueries.findNextLessonPosition(moduleId)
 
-  const client = await pool.connect()
-  try {
-    await client.query('BEGIN')
-
+  return withTransaction(async (client) => {
     const lessons: Lesson[] = []
     for (let i = 0; i < items.length; i++) {
-      const lesson = await courseQueries.insertLesson(client, moduleId, items[i].title, items[i].contentUrl, startPosition + i)
+      const lesson = await courseQueries.insertLesson(
+          client,
+          moduleId,
+          items[i].title.trim(),
+          items[i].contentUrl,
+          startPosition + i
+      )
       lessons.push(lesson)
     }
-
-    await client.query('COMMIT')
     return lessons
-  } catch (error) {
-    await client.query('ROLLBACK')
-    throw error
-  } finally {
-    client.release()
-  }
+  })
 }
 
 export const reorderLessons = async (
-  instructorId: string,
-  moduleId: string,
-  orderedLessonIds: string[]
+    instructorId: string,
+    moduleId: string,
+    orderedLessonIds: string[]
 ): Promise<Lesson[]> => {
   await assertInstructorOwnsModule(instructorId, moduleId)
 
@@ -248,26 +275,16 @@ export const reorderLessons = async (
   const providedSet = new Set(orderedLessonIds)
 
   const isExactMatch =
-    existingSet.size === providedSet.size && [...existingSet].every((id) => providedSet.has(id))
+      existingSet.size === providedSet.size && [...existingSet].every((id) => providedSet.has(id))
   if (!isExactMatch) {
     throw new ValidationError('Provided lesson IDs must exactly match the lessons in this module')
   }
 
-  const client = await pool.connect()
-  try {
-    await client.query('BEGIN')
-
+  await withTransaction(async (client) => {
     for (let i = 0; i < orderedLessonIds.length; i++) {
       await lessonQueries.setLessonPosition(client, orderedLessonIds[i], i)
     }
-
-    await client.query('COMMIT')
-  } catch (error) {
-    await client.query('ROLLBACK')
-    throw error
-  } finally {
-    client.release()
-  }
+  })
 
   return lessonQueries.findLessonsByModuleId(moduleId)
 }

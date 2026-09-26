@@ -43,9 +43,21 @@ vi.mock('../../hooks/useRegister', () => ({
   useRegister: () => mutationResult,
 }))
 
+const navigate = vi.fn()
+vi.mock('react-router-dom', () => ({
+  useNavigate: () => navigate,
+}))
+
+const authLogin = vi.fn()
+vi.mock('../../hooks/useAuth', () => ({
+  useAuth: () => ({ login: authLogin }),
+}))
+
 describe('Register (unit)', () => {
   beforeEach(() => {
     mutate.mockClear()
+    navigate.mockClear()
+    authLogin.mockClear()
     mutationResult = mockMutationResult({})
   })
 
@@ -130,13 +142,25 @@ describe('Register (unit)', () => {
     expect(screen.getByRole('alert')).toHaveTextContent('Email already registered')
   })
 
-  it('shows a success message and calls onSuccess when the mutation succeeds', () => {
-    const onSuccess = vi.fn()
-    mutationResult = mockMutationResult({ isSuccess: true })
-    renderWithTheme(<Register onSuccess={onSuccess} />)
+  it('logs the user in and redirects to the dashboard when the mutation succeeds', () => {
+    mutationResult = mockMutationResult({
+      isSuccess: true,
+      data: { token: 'jwt-token', userId: 'user-1' },
+    })
+    renderWithTheme(<Register />)
 
-    expect(screen.getByRole('status')).toHaveTextContent('Account created. You can now sign in.')
-    expect(onSuccess).toHaveBeenCalledTimes(1)
+    expect(authLogin).toHaveBeenCalledWith('jwt-token')
+    expect(navigate).toHaveBeenCalledWith('/dashboard', { replace: true })
+  })
+
+  it('redirects to a custom path when redirectTo is provided', () => {
+    mutationResult = mockMutationResult({
+      isSuccess: true,
+      data: { token: 'jwt-token', userId: 'user-1' },
+    })
+    renderWithTheme(<Register redirectTo="/welcome" />)
+
+    expect(navigate).toHaveBeenCalledWith('/welcome', { replace: true })
   })
 
   it('disables the submit button and shows pending text while submitting', () => {

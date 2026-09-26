@@ -3,10 +3,10 @@ import { pool } from '../config/db'
 import { Course, CourseAnalytics, CourseSearchFilters, Module, Lesson } from '../types/course.type'
 
 export const insertCourse = async (
-  client: PoolClient,
-  instructorId: string,
-  title: string,
-  description: string | null
+    client: PoolClient,
+    instructorId: string,
+    title: string,
+    description: string | undefined
 ): Promise<Course> => {
   const result = await client.query<Course>(
     `INSERT INTO nx.courses (instructor_id, title, description)
@@ -76,7 +76,7 @@ export const searchCoursesPaginated = async (
        AND ($1::text IS NULL OR title ILIKE '%' || $1 || '%' OR description ILIKE '%' || $1 || '%')
        AND ($2::text IS NULL OR category = $2)
        AND ($3::uuid IS NULL OR instructor_id = $3::uuid)
-       AND ($4::varchar IS NULL OR level = $4::varchar)
+       AND ($4::text IS NULL OR level::text = $4::text)
        AND ($5::uuid IS NULL OR id > $5::uuid)
      ORDER BY id 
      LIMIT $6`,
@@ -145,9 +145,9 @@ export const findCourseById = async (id: string): Promise<Course | null> => {
 }
 
 export const updateCourse = async (
-  id: string,
-  title: string,
-  description: string | null
+    id: string,
+    title: string,
+    description: string | undefined
 ): Promise<Course | null> => {
   const result = await pool.query<Course>(
     `UPDATE nx.courses

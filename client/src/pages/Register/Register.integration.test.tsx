@@ -2,8 +2,10 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ThemeProvider } from 'styled-components'
+import { MemoryRouter } from 'react-router-dom'
 import type { ReactElement } from 'react'
 import { theme } from '../../theme'
+import { AuthProvider } from '../../hooks/useAuth'
 import Register from './index'
 
 function renderWithProviders(ui: ReactElement): ReturnType<typeof render> {
@@ -12,7 +14,11 @@ function renderWithProviders(ui: ReactElement): ReturnType<typeof render> {
   })
   return render(
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider theme={theme}>{ui}</ThemeProvider>
+      <ThemeProvider theme={theme}>
+        <AuthProvider>
+          <MemoryRouter>{ui}</MemoryRouter>
+        </AuthProvider>
+      </ThemeProvider>
     </QueryClientProvider>,
   )
 }
