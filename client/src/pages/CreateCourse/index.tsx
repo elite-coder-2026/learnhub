@@ -1,40 +1,22 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import AddIcon from '@mui/icons-material/Add'
 import * as S from './CreateCourse.styles'
 import AppShell from '../../components/AppShell'
 import Container from '../../components/Container'
 import PageHeader from '../../components/PageHeader'
 import Button from '../../components/Button'
+import Input from '../../components/Input'
+import InlineError from '../../components/InlineError'
+import ModuleEditor from '../../components/ModuleEditor'
 import { INSTRUCTOR_NAV } from '../../config/nav'
 import { useCreateCourse } from '../../hooks/useCreateCourse'
+import { useCourseForm } from '../../hooks/useCourseForm'
 
-interface FormState {
-  title: string
-  description: string
-}
-
-type FieldErrors = Partial<Record<keyof FormState, string>>
-
-const INITIAL_FORM: FormState = {
-  title: '',
-  description: '',
-}
-
-function validate(form: FormState): FieldErrors {
-  const errors: FieldErrors = {}
-
-  if (!form.title.trim()) {
-    errors.title = 'Course title is required'
-  }
-
-  return errors
-}
+const pluralize = (count: number, word: string): string => `${count} ${word}${count === 1 ? '' : 's'}`
 
 const CreateCourse: React.FC = () => {
-  const [form, setForm] = useState<FormState>(INITIAL_FORM)
-  const [errors, setErrors] = useState<FieldErrors>({})
-  const [submitted, setSubmitted] = useState<boolean>(false)
-
+  const form = useCourseForm()
   const createCourse = useCreateCourse()
   const navigate = useNavigate()
 
@@ -44,29 +26,12 @@ const CreateCourse: React.FC = () => {
     }
   }, [createCourse.isSuccess, createCourse.data, navigate])
 
-  const updateField = <K extends keyof FormState>(
-    key: K,
-    value: FormState[K],
-  ): void => {
-    setForm((prev) => ({ ...prev, [key]: value }))
-  }
-
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
     event.preventDefault()
-    setSubmitted(true)
-
-    const nextErrors = validate(form)
-    setErrors(nextErrors)
-    if (Object.keys(nextErrors).length > 0) return
-
-    createCourse.mutate({
-      title: form.title.trim(),
-      description: form.description.trim() || null,
-      modules: [],
-    })
+    form.markSubmitted()
+    if (form.hasErrors) return
+    createCourse.mutate(form.toInput())
   }
-
-  const liveErrors = submitted ? validate(form) : errors
 
   return (
     <AppShell navItems={INSTRUCTOR_NAV}>
@@ -74,52 +39,69 @@ const CreateCourse: React.FC = () => {
         <S.Body>
           <PageHeader
             title="Create a course"
-            description="Give your course a title and description. You can add modules and lessons afterward."
+            description="Add the course details, then build its modules and lessons."
           />
 
-          <S.Card>
-            {createCourse.isError && (
-              <S.Message $variant="error" role="alert">
-                {createCourse.error.message}
-              </S.Message>
-            )}
-
-            <S.Form onSubmit={handleSubmit} noValidate>
-              <S.Field>
-                <S.Label htmlFor="course-title">Title</S.Label>
-                <S.Input
-                  id="course-title"
-                  type="text"
-                  value={form.title}
-                  $hasError={Boolean(liveErrors.title)}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    updateField('title', e.target.value)
-                  }
-                />
-                {liveErrors.title && (
-                  <S.FieldError>{liveErrors.title}</S.FieldError>
-                )}
-              </S.Field>
-
+          <S.Form onSubmit={handleSubmit} noValidate>
+            <S.Card>
+              <S.CardTitle>Course details</S.CardTitle>
+              <Input
+                label="Title"
+                placeholder="e.g. Introduction to TypeScript"
+                value={form.title}
+                error={form.errors.title}
+                onChange={(e) => form.setTitle(e.target.value)}
+              />
               <S.Field>
                 <S.Label htmlFor="course-description">Description</S.Label>
                 <S.TextArea
                   id="course-description"
+                  placeholder="What will students learn?"
                   value={form.description}
-                  $hasError={Boolean(liveErrors.description)}
+                  $hasError={false}
                   onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-                    updateField('description', e.target.value)
+                    form.setDescription(e.target.value)
                   }
                 />
               </S.Field>
+            </S.Card>
 
-              <S.Actions>
-                <Button type="submit" isLoading={createCourse.isPending}>
-                  Create course
-                </Button>
-              </S.Actions>
-            </S.Form>
-          </S.Card>
+            <S.SectionHeader>
+              <S.SectionTitle>Curriculum</S.SectionTitle>
+              <S.SectionMeta>
+                {pluralize(form.modules.length, 'module')} · {pluralize(form.lessonCount, 'lesson')}
+              </S.SectionMeta>
+            </S.SectionHeader>
+
+            {form.modules.map((courseModule, index) => (
+              <ModuleEditor
+                key={courseModule.key}
+                module={courseModule}
+                position={index + 1}
+                moduleError={form.errors.modules[courseModule.key]}
+                lessonErrors={form.errors.lessons}
+                canRemove={form.modules.length > 1}
+                onTitleChange={(title) => form.updateModuleTitle(courseModule.key, title)}
+                onRemove={() => form.removeModule(courseModule.key)}
+                onAddLesson={() => form.addLesson(courseModule.key)}
+                onRemoveLesson={(lessonKey) => form.removeLesson(courseModule.key, lessonKey)}
+                onLessonChange={(lessonKey, patch) => form.updateLesson(courseModule.key, lessonKey, patch)}
+              />
+            ))}
+
+            <S.AddModuleButton type="button" onClick={form.addModule}>
+              <AddIcon fontSize="inherit" />
+              Add module
+            </S.AddModuleButton>
+
+            {createCourse.isError && <InlineError message={createCourse.error.message} />}
+
+            <S.Actions>
+              <Button type="submit" isLoading={createCourse.isPending}>
+                Create course
+              </Button>
+            </S.Actions>
+          </S.Form>
         </S.Body>
       </Container>
     </AppShell>

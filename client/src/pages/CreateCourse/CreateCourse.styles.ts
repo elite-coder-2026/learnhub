@@ -3,84 +3,110 @@ import styled from 'styled-components'
 export const Body = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.lg};
-`
-
-export const Card = styled.div`
-  max-width: 640px;
-  padding: ${({ theme }) => theme.spacing.xl};
-  background: ${({ theme }) => theme.colors.surface};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.borderRadius.lg};
+  gap: ${({ theme }) => theme.spacing[6]};
 `
 
 export const Form = styled.form`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.md};
+  gap: ${({ theme }) => theme.spacing[4]};
+`
+
+export const Card = styled.section`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing[4]};
+  padding: ${({ theme }) => theme.spacing[6]};
+  background: ${({ theme }) => theme.colors.surface};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radii.lg};
+  box-shadow: ${({ theme }) => theme.shadows.card};
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
+    padding: ${({ theme }) => theme.spacing[4]};
+  }
+`
+
+export const CardTitle = styled.h2`
+  font-size: ${({ theme }) => theme.fontSizes.lg};
+  font-weight: ${({ theme }) => theme.fontWeights.semibold};
+  color: ${({ theme }) => theme.colors.text};
 `
 
 export const Field = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.xs};
+  gap: ${({ theme }) => theme.spacing[1]};
 `
 
 export const Label = styled.label`
   font-size: ${({ theme }) => theme.fontSizes.sm};
+  font-weight: ${({ theme }) => theme.fontWeights.medium};
   color: ${({ theme }) => theme.colors.text};
-`
-
-export const Input = styled.input<{ $hasError: boolean }>`
-  padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.md};
-  font-size: ${({ theme }) => theme.fontSizes.md};
-  color: ${({ theme }) => theme.colors.text};
-  background: ${({ theme }) => theme.colors.surface};
-  border: 1px solid
-    ${({ $hasError, theme }) =>
-      $hasError ? theme.colors.error : theme.colors.border};
-  border-radius: ${({ theme }) => theme.borderRadius.sm};
-  outline: none;
-
-  &:focus {
-    border-color: ${({ $hasError, theme }) =>
-      $hasError ? theme.colors.error : theme.colors.primary};
-  }
 `
 
 export const TextArea = styled.textarea<{ $hasError: boolean }>`
-  padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.md};
+  min-height: ${({ theme }) => theme.sizes.thumbnail};
+  padding: ${({ theme }) => theme.spacing[2]} ${({ theme }) => theme.spacing[3]};
+  font-family: inherit;
   font-size: ${({ theme }) => theme.fontSizes.md};
   color: ${({ theme }) => theme.colors.text};
   background: ${({ theme }) => theme.colors.surface};
   border: 1px solid
-    ${({ $hasError, theme }) =>
-      $hasError ? theme.colors.error : theme.colors.border};
-  border-radius: ${({ theme }) => theme.borderRadius.sm};
+    ${({ $hasError, theme }) => ($hasError ? theme.colors.error : theme.colors.border)};
+  border-radius: ${({ theme }) => theme.radii.sm};
   outline: none;
-  min-height: 120px;
   resize: vertical;
-  font-family: inherit;
 
   &:focus {
-    border-color: ${({ $hasError, theme }) =>
-      $hasError ? theme.colors.error : theme.colors.primary};
+    border-color: ${({ $hasError, theme }) => ($hasError ? theme.colors.error : theme.colors.primary)};
   }
 `
 
-export const FieldError = styled.span`
-  font-size: ${({ theme }) => theme.fontSizes.sm};
-  color: ${({ theme }) => theme.colors.error};
+export const SectionHeader = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: ${({ theme }) => theme.spacing[2]};
+  margin-top: ${({ theme }) => theme.spacing[4]};
 `
 
-export const Message = styled.p<{ $variant: 'error' | 'success' }>`
-  margin: 0;
-  padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.md};
+export const SectionTitle = styled.h2`
+  font-size: ${({ theme }) => theme.fontSizes.lg};
+  font-weight: ${({ theme }) => theme.fontWeights.semibold};
+  color: ${({ theme }) => theme.colors.text};
+`
+
+export const SectionMeta = styled.span`
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  color: ${({ theme }) => theme.colors.surface};
-  background: ${({ $variant, theme }) =>
-    $variant === 'error' ? theme.colors.error : theme.colors.success};
-  border-radius: ${({ theme }) => theme.borderRadius.sm};
+  color: ${({ theme }) => theme.colors.textMuted};
+`
+
+export const AddModuleButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: ${({ theme }) => theme.spacing[2]};
+  padding: ${({ theme }) => theme.spacing[4]};
+  font-family: inherit;
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  font-weight: ${({ theme }) => theme.fontWeights.semibold};
+  color: ${({ theme }) => theme.colors.primary};
+  background: ${({ theme }) => theme.colors.primarySoft};
+  border: 1px dashed ${({ theme }) => theme.colors.primary};
+  border-radius: ${({ theme }) => theme.radii.lg};
+  cursor: pointer;
+  transition: background ${({ theme }) => theme.transitions.fast};
+
+  &:hover {
+    background: ${({ theme }) => theme.colors.surface};
+  }
+
+  &:focus-visible {
+    outline: 2px solid ${({ theme }) => theme.colors.primary};
+    outline-offset: 2px;
+  }
 `
 
 export const Actions = styled.div`
