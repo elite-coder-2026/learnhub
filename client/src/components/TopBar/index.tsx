@@ -37,6 +37,16 @@ const TopBar: React.FC<TopBarProps> = ({ navItems, onToggleSidebar }) => {
         <MenuIcon fontSize="inherit" />
       </S.ToggleButton>
       <S.Title>{findPageTitle(navItems, pathname)}</S.Title>
+      {!user && (
+        <S.UserArea>
+          <Button variant="ghost" size="sm" onClick={() => navigate('/login')}>
+            Log in
+          </Button>
+          <Button size="sm" onClick={() => navigate('/register')}>
+            Sign up
+          </Button>
+        </S.UserArea>
+      )}
       {user && (
         <S.UserArea>
           <S.Avatar aria-hidden="true">

@@ -8,7 +8,7 @@ import Button from '../../components/Button'
 import CourseGrid from '../../components/CourseGrid'
 import Dropdown, { type DropdownOption } from '../../components/Dropdown'
 import SearchInput from '../../components/SearchInput'
-import { NAV_BY_ROLE } from '../../config/nav'
+import { NAV_BY_ROLE, PUBLIC_NAV } from '../../config/nav'
 import { useAuth } from '../../hooks/useAuth'
 import { useCourses } from '../../hooks/useCourses'
 import { useDebouncedValue } from '../../hooks/useDebouncedValue'
@@ -65,7 +65,7 @@ const CourseCatalog: React.FC = () => {
   }
 
   return (
-    <AppShell navItems={user ? NAV_BY_ROLE[user.role] : []}>
+    <AppShell navItems={user ? NAV_BY_ROLE[user.role] : PUBLIC_NAV}>
       <Container>
         <S.Body>
           <S.HeaderCard>

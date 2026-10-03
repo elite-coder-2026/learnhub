@@ -96,7 +96,7 @@ const Home: React.FC = () => {
             <Button size="lg" onClick={() => navigate(user ? '/dashboard' : '/register')}>
               {user ? 'Go to dashboard' : 'Get started free'}
             </Button>
-            <Button variant="secondary" size="lg" onClick={() => navigate(user ? '/courses' : '/login')}>
+            <Button variant="secondary" size="lg" onClick={() => navigate('/courses')}>
               Browse courses
             </Button>
           </S.HeroActions>

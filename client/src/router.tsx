@@ -26,9 +26,7 @@ function AppRoutes(): React.ReactElement {
       <Route
         path="/courses"
         element={
-          <ProtectedRoute>
-            <CourseCatalog />
-          </ProtectedRoute>
+          <CourseCatalog />
         }
       />
       <Route
@@ -42,9 +40,7 @@ function AppRoutes(): React.ReactElement {
       <Route
         path="/courses/:id"
         element={
-          <ProtectedRoute>
-            <CourseDetail />
-          </ProtectedRoute>
+          <CourseDetail />
         }
       />
       <Route

@@ -5,8 +5,14 @@ import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn'
 import PeopleIcon from '@mui/icons-material/People'
 import FlagIcon from '@mui/icons-material/Flag'
 import AddCircleOutlinedIcon from '@mui/icons-material/AddCircleOutlined'
+import HomeIcon from '@mui/icons-material/Home'
 import type { SidebarNavItem } from '../components/Sidebar'
 import type { UserRole } from '../types/auth'
+
+export const PUBLIC_NAV: SidebarNavItem[] = [
+  { label: 'Home', to: '/', icon: HomeIcon },
+  { label: 'Courses', to: '/courses', icon: MenuBookIcon },
+]
 
 export const STUDENT_NAV: SidebarNavItem[] = [
   { label: 'Dashboard', to: '/dashboard', icon: SpaceDashboardIcon },

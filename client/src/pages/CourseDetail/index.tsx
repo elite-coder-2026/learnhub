@@ -7,7 +7,8 @@ import Button from '../../components/Button'
 import Skeleton from '../../components/Skeleton'
 import InlineError from '../../components/InlineError'
 import LessonList from '../../components/LessonList'
-import { STUDENT_NAV } from '../../config/nav'
+import { NAV_BY_ROLE, PUBLIC_NAV } from '../../config/nav'
+import { useAuth } from '../../hooks/useAuth'
 import { useCourse } from '../../hooks/useCourse'
 import { useEnroll } from '../../hooks/useEnroll'
 import { useStudentDashboard } from '../../hooks/useDashboardQueries'
@@ -15,6 +16,7 @@ import { useStudentDashboard } from '../../hooks/useDashboardQueries'
 const CourseDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const { user } = useAuth()
 
   const course = useCourse(id)
   const dashboard = useStudentDashboard()
@@ -29,7 +31,7 @@ const CourseDetail: React.FC = () => {
   )
 
   return (
-    <AppShell navItems={STUDENT_NAV}>
+    <AppShell navItems={user ? NAV_BY_ROLE[user.role] : PUBLIC_NAV}>
       <Container>
         <S.Body>
           {course.isLoading && (
@@ -71,7 +73,7 @@ const CourseDetail: React.FC = () => {
                 ) : (
                   <>
                     <Button
-                      onClick={() => enroll.mutate()}
+                      onClick={() => (user ? enroll.mutate() : navigate('/login'))}
                       isLoading={enroll.isPending}
                       disabled={dashboard.isLoading}
                     >
