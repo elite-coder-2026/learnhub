@@ -12,3 +12,12 @@ export interface User {
   created_at: Date
   updated_at: Date
 }
+
+export interface TopInstructor {
+  id: string
+  first_name: string | null
+  last_name: string | null
+  avatar_url: string | null
+  course_count: number
+  student_count: number
+}

@@ -1,6 +1,6 @@
 import * as userQueries from '../queries/user.query'
-import { User } from '../types/user.type'
-import { NotFoundError, UnauthorizedError } from '../utils/errors'
+import { TopInstructor, User } from '../types/user.type'
+import { NotFoundError, UnauthorizedError, ValidationError } from '../utils/errors'
 
 export const getUserById = async (id: string): Promise<User> => {
   const user = await userQueries.findUserById(id)
@@ -28,4 +28,11 @@ export const updateUser = async (
 export const deleteUser = async (id: string): Promise<void> => {
   await getUserById(id)
   await userQueries.deleteUser(id)
+}
+
+const MAX_TOP_INSTRUCTORS = 12
+
+export const getTopInstructors = async (limit: number): Promise<TopInstructor[]> => {
+  if (!Number.isInteger(limit) || limit < 1) throw new ValidationError('limit must be a positive integer')
+  return userQueries.findTopInstructors(Math.min(limit, MAX_TOP_INSTRUCTORS))
 }

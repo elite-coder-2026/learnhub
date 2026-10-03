@@ -1,6 +1,6 @@
 import { PoolClient } from 'pg'
 import { pool } from '../config/db'
-import { Course, CourseAnalytics, CourseLevel, Module, Lesson } from '../types/course.type'
+import { Course, CourseAnalytics, CourseLevel, Module, Lesson, PopularCourse } from '../types/course.type'
 
 export const insertCourse = async (
     client: PoolClient,
@@ -233,4 +233,25 @@ export const softDeleteModule = async (id: string): Promise<void> => {
        AND deleted_at IS NULL`,
     [id]
   )
+}
+
+export const findPopularCourses = async (limit: number): Promise<PopularCourse[]> => {
+  const result = await pool.query<PopularCourse>(
+    `SELECT c.id, c.instructor_id, c.title, c.description, c.category, c.level, c.created_at, c.updated_at,
+            (SELECT COUNT(*)::int
+             FROM nx.enrollments e
+             WHERE e.course_id = c.id
+               AND e.deleted_at IS NULL) AS enrollment_count,
+            (SELECT COUNT(*)::int
+             FROM nx.modules m
+             JOIN nx.lessons l ON l.module_id = m.id AND l.deleted_at IS NULL
+             WHERE m.course_id = c.id
+               AND m.deleted_at IS NULL) AS lesson_count
+     FROM nx.courses c
+     WHERE c.deleted_at IS NULL
+     ORDER BY enrollment_count DESC, c.created_at DESC, c.id
+     LIMIT $1`,
+    [limit]
+  )
+  return result.rows
 }

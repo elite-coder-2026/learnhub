@@ -1,9 +1,10 @@
 import { Router } from 'express'
-import { getUser, updateUser, deleteUser } from '../controllers/user.controller'
+import { getUser, updateUser, deleteUser, listTopInstructors } from '../controllers/user.controller'
 import { requireAuth, requireSelfOrAdmin } from '../middleware/authMiddleware'
 
 const router = Router()
 
+router.get('/instructors/top', listTopInstructors)
 router.get('/:id', requireAuth, requireSelfOrAdmin(), getUser)
 router.put('/:id', requireAuth, requireSelfOrAdmin(), updateUser)
 router.delete('/:id', requireAuth, requireSelfOrAdmin(), deleteUser)

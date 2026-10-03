@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import * as userService from '../services/user.service'
-import { NotFoundError, UnauthorizedError } from '../utils/errors'
+import { NotFoundError, UnauthorizedError, ValidationError } from '../utils/errors'
 import { paramString } from '../utils/params'
 import { User } from '../types/user.type'
 
@@ -49,6 +49,25 @@ export const deleteUser = async (req: Request, res: Response): Promise<void> => 
   } catch (error) {
     if (error instanceof NotFoundError) {
       res.status(404).json({ error: error.message })
+      return
+    }
+    console.error(error)
+    res.status(500).json({ error: 'Internal server error' })
+  }
+}
+
+const DEFAULT_HIGHLIGHT_LIMIT = 6
+
+const parseLimit = (value: unknown): number =>
+  typeof value === 'string' && value.trim() !== '' ? Number(value) : DEFAULT_HIGHLIGHT_LIMIT
+
+export const listTopInstructors = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const instructors = await userService.getTopInstructors(parseLimit(req.query.limit))
+    res.json({ data: instructors })
+  } catch (error) {
+    if (error instanceof ValidationError) {
+      res.status(400).json({ error: error.message })
       return
     }
     console.error(error)

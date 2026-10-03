@@ -188,3 +188,22 @@ export const reorderLessons = async (req: Request, res: Response): Promise<void>
     handleWriteError(error, res)
   }
 }
+
+const DEFAULT_HIGHLIGHT_LIMIT = 6
+
+const parseLimit = (value: unknown): number =>
+  typeof value === 'string' && value.trim() !== '' ? Number(value) : DEFAULT_HIGHLIGHT_LIMIT
+
+export const listPopularCourses = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const courses = await courseService.getPopularCourses(parseLimit(req.query.limit))
+    res.json({ data: courses })
+  } catch (error) {
+    if (error instanceof ValidationError) {
+      res.status(400).json({ error: error.message })
+      return
+    }
+    console.error(error)
+    res.status(500).json({ error: 'Internal server error' })
+  }
+}

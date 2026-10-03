@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import {
+  listPopularCourses,
   createCourse,
   getCourse,
   updateCourse,
@@ -22,6 +23,7 @@ import { requireAuth, requireRole } from '../middleware/authMiddleware'
 const router = Router()
 
 router.get('/', listCourses)
+router.get('/popular', listPopularCourses)
 router.post('/', requireAuth, requireRole('instructor'), createCourse)
 router.get('/analytics', requireAuth, requireRole('instructor'), getAnalytics)
 router.get('/:id', getCourse)

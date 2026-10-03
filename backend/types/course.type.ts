@@ -94,3 +94,8 @@ export interface UpdateLessonInput {
   contentUrl: string | null
   position: number
 }
+
+export interface PopularCourse extends Course {
+  enrollment_count: number
+  lesson_count: number
+}

@@ -16,7 +16,8 @@ import {
   UpdateCourseInput,
   UpdateModuleInput,
   UpdateLessonInput,
-  DownloadableLesson
+  DownloadableLesson,
+  PopularCourse
 } from '../types/course.type'
 import { NotFoundError, UnauthorizedError, ValidationError } from '../utils/errors'
 
@@ -268,4 +269,11 @@ export const reorderLessons = async (
   })
 
   return lessonQueries.findLessonsByModuleId(moduleId)
+}
+
+const MAX_HIGHLIGHT_LIMIT = 12
+
+export const getPopularCourses = async (limit: number): Promise<PopularCourse[]> => {
+  if (!Number.isInteger(limit) || limit < 1) throw new ValidationError('limit must be a positive integer')
+  return courseQueries.findPopularCourses(Math.min(limit, MAX_HIGHLIGHT_LIMIT))
 }
