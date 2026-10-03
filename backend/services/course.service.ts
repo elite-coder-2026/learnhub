@@ -21,8 +21,16 @@ import {
 } from '../types/course.type'
 import { NotFoundError, UnauthorizedError, ValidationError } from '../utils/errors'
 
+const MAX_PRICE_CENTS = 999_999
+
 const validateCreateCourseInput = (input: CreateCourseInput): void => {
   if (!input.title.trim()) throw new ValidationError('Course title is required')
+  if (
+    input.priceCents !== undefined &&
+    (!Number.isInteger(input.priceCents) || input.priceCents < 0 || input.priceCents > MAX_PRICE_CENTS)
+  ) {
+    throw new ValidationError('priceCents must be a whole number of cents between 0 and 999999')
+  }
   if (!Array.isArray(input.modules)) throw new ValidationError('Modules are required')
 
   for (const courseModule of input.modules) {
@@ -69,7 +77,8 @@ export const createCourse = async (
         client,
         instructorId,
         input.title.trim(),
-        input.description?.trim()
+        input.description?.trim(),
+        input.priceCents ?? 0
     )
 
     const modules: ModuleWithLessons[] = []

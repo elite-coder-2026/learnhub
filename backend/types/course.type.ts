@@ -7,6 +7,7 @@ export interface Course {
   description: string | null
   category: string | null
   level: CourseLevel | null
+  price_cents: number
   created_at: Date
   updated_at: Date
 }
@@ -57,6 +58,7 @@ export interface CreateModuleInput {
 export interface CreateCourseInput {
   title: string
   description: string | null
+  priceCents?: number
   modules: CreateModuleInput[]
 }
 

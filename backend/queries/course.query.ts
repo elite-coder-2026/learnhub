@@ -6,13 +6,14 @@ export const insertCourse = async (
     client: PoolClient,
     instructorId: string,
     title: string,
-    description: string | undefined
+    description: string | undefined,
+    priceCents: number
 ): Promise<Course> => {
   const result = await client.query<Course>(
-    `INSERT INTO nx.courses (instructor_id, title, description)
-     VALUES ($1, $2, $3)
-     RETURNING id, instructor_id, title, description, category, level, created_at, updated_at`,
-    [instructorId, title, description]
+    `INSERT INTO nx.courses (instructor_id, title, description, price_cents)
+     VALUES ($1, $2, $3, $4)
+     RETURNING id, instructor_id, title, description, category, level, price_cents, created_at, updated_at`,
+    [instructorId, title, description, priceCents]
   )
   return result.rows[0]
 }
@@ -53,7 +54,7 @@ export const findCoursesPaginated = async (
   limit: number
 ): Promise<Course[]> => {
   const result = await pool.query<Course>(
-    `SELECT id, instructor_id, title, description, category, level, created_at, updated_at
+    `SELECT id, instructor_id, title, description, category, level, price_cents, created_at, updated_at
      FROM nx.courses
      WHERE deleted_at IS NULL
        AND ($1::uuid IS NULL OR id > $1::uuid)
@@ -114,7 +115,7 @@ export const findAnalyticsForInstructor = async (instructorId: string): Promise<
 
 export const findCourseById = async (id: string): Promise<Course | null> => {
   const result = await pool.query<Course>(
-    `SELECT id, instructor_id, title, description, category, level, created_at, updated_at
+    `SELECT id, instructor_id, title, description, category, level, price_cents, created_at, updated_at
      FROM nx.courses
      WHERE id = $1
        AND deleted_at IS NULL`,
@@ -135,7 +136,7 @@ export const updateCourse = async (
          updated_at = NOW()
      WHERE id = $1
        AND deleted_at IS NULL
-     RETURNING id, instructor_id, title, description, category, level, created_at, updated_at`,
+     RETURNING id, instructor_id, title, description, category, level, price_cents, created_at, updated_at`,
     [id, title, description]
   )
   return result.rows[0] ?? null
@@ -199,19 +200,21 @@ export const updateModule = async (id: string, title: string, position: number):
   return result.rows[0] ?? null
 }
 
-export const setCourseCategoryAndLevel = async (
+export const setCourseCatalogFields = async (
   id: string,
   category: string | null,
-  level: CourseLevel | null
+  level: CourseLevel | null,
+  priceCents: number
 ): Promise<void> => {
   await pool.query(
     `UPDATE nx.courses
      SET category = $2,
          level = $3,
+         price_cents = $4,
          updated_at = NOW()
      WHERE id = $1
        AND deleted_at IS NULL`,
-    [id, category, level]
+    [id, category, level, priceCents]
   )
 }
 
@@ -237,7 +240,7 @@ export const softDeleteModule = async (id: string): Promise<void> => {
 
 export const findPopularCourses = async (limit: number): Promise<PopularCourse[]> => {
   const result = await pool.query<PopularCourse>(
-    `SELECT c.id, c.instructor_id, c.title, c.description, c.category, c.level, c.created_at, c.updated_at,
+    `SELECT c.id, c.instructor_id, c.title, c.description, c.category, c.level, c.price_cents, c.created_at, c.updated_at,
             (SELECT COUNT(*)::int
              FROM nx.enrollments e
              WHERE e.course_id = c.id

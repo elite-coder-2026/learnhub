@@ -25,6 +25,7 @@ interface SeedCourse {
   description: string
   category: string
   level: CourseLevel
+  priceCents: number
   instructorEmail: string
   modules: SeedModule[]
 }
@@ -45,6 +46,7 @@ const COURSES: SeedCourse[] = [
       'Learn the type system that makes large JavaScript codebases manageable: primitives, unions, generics, and strict-mode habits that catch bugs before they ship.',
     category: 'Programming',
     level: 'beginner',
+    priceCents: 4999,
     instructorEmail: 'instructor@learnhub.dev',
     modules: [
       { title: 'Getting Started', lessons: ['Why TypeScript', 'Installing the Compiler', 'Your First Typed Program'] },
@@ -58,6 +60,7 @@ const COURSES: SeedCourse[] = [
       'Go beyond the basics with composition, custom hooks, server state with React Query, and performance techniques used in production React apps.',
     category: 'Frontend',
     level: 'intermediate',
+    priceCents: 7999,
     instructorEmail: 'instructor@learnhub.dev',
     modules: [
       { title: 'Component Composition', lessons: ['Children and Slots', 'Compound Components', 'Render Props Today'] },
@@ -72,6 +75,7 @@ const COURSES: SeedCourse[] = [
       'Write SQL you can trust: schema design, indexes, transactions, and query plans, taught from the perspective of the app code that runs them.',
     category: 'Databases',
     level: 'intermediate',
+    priceCents: 6999,
     instructorEmail: 'instructor@learnhub.dev',
     modules: [
       { title: 'Modeling Data', lessons: ['Tables, Keys, and UUIDs', 'Constraints as Documentation', 'Soft Deletes', 'Enums and Lookup Tables'] },
@@ -85,6 +89,7 @@ const COURSES: SeedCourse[] = [
       'Design APIs that clients enjoy using: resource modeling, status codes, error shapes, pagination, and versioning without breaking consumers.',
     category: 'Backend',
     level: 'intermediate',
+    priceCents: 5999,
     instructorEmail: 'instructor@learnhub.dev',
     modules: [
       { title: 'Resources and Routes', lessons: ['Modeling Resources', 'HTTP Methods and Idempotency', 'Status Codes That Help'] },
@@ -98,6 +103,7 @@ const COURSES: SeedCourse[] = [
       'Turn numbers into charts people understand. Pick the right chart, use color with intent, and avoid the classic mistakes that mislead readers.',
     category: 'Data',
     level: 'beginner',
+    priceCents: 0,
     instructorEmail: 'instructor@learnhub.dev',
     modules: [
       { title: 'Choosing a Chart', lessons: ['Comparisons and Rankings', 'Trends Over Time', 'Parts of a Whole'] },
@@ -110,6 +116,7 @@ const COURSES: SeedCourse[] = [
       'Reason about scale: caching, queues, replication, and consistency trade-offs, practiced through real design exercises from small apps to large platforms.',
     category: 'Architecture',
     level: 'advanced',
+    priceCents: 12999,
     instructorEmail: 'instructor@learnhub.dev',
     modules: [
       { title: 'Foundations', lessons: ['Latency and Throughput', 'Back-of-the-Envelope Estimates', 'Load Balancing'] },
@@ -124,6 +131,7 @@ const COURSES: SeedCourse[] = [
       'Build interfaces everyone can use. Semantic HTML, keyboard support, ARIA used correctly, and testing with real assistive technology.',
     category: 'Frontend',
     level: 'beginner',
+    priceCents: 3999,
     instructorEmail: 'instructor@learnhub.dev',
     modules: [
       { title: 'Foundations', lessons: ['Who Accessibility Serves', 'Semantic HTML First', 'Color and Contrast'] },
@@ -162,8 +170,10 @@ const seed = async (): Promise<void> => {
 
   const courseIds = await loadExistingCourseIdsByTitle()
   for (const course of COURSES) {
-    if (courseIds.has(course.title)) {
-      console.log(`  skipped existing course "${course.title}"`)
+    const existingId = courseIds.get(course.title)
+    if (existingId) {
+      await courseQueries.setCourseCatalogFields(existingId, course.category, course.level, course.priceCents)
+      console.log(`  updated catalog fields for existing course "${course.title}"`)
       continue
     }
     const instructorId = userIds.get(course.instructorEmail)
@@ -180,7 +190,7 @@ const seed = async (): Promise<void> => {
         }))
       }))
     })
-    await courseQueries.setCourseCategoryAndLevel(created.id, course.category, course.level)
+    await courseQueries.setCourseCatalogFields(created.id, course.category, course.level, course.priceCents)
     courseIds.set(course.title, created.id)
     console.log(`  created course "${course.title}"`)
   }

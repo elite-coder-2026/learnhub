@@ -7,8 +7,8 @@ import { paramString } from '../utils/params'
 export const createCourse = async (req: Request, res: Response): Promise<void> => {
   try {
     const instructorId = req.user!.id
-    const { title, description, modules } = req.body
-    const course = await courseService.createCourse(instructorId, { title, description, modules })
+    const { title, description, modules, priceCents } = req.body
+    const course = await courseService.createCourse(instructorId, { title, description, modules, priceCents })
     res.status(201).json({ data: course })
   } catch (error) {
     if (error instanceof ValidationError) {
