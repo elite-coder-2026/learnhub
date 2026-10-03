@@ -153,3 +153,9 @@ export const ViewLabel = styled.span`
   font-weight: ${({ theme }) => theme.fontWeights.semibold};
   color: ${({ theme }) => theme.colors.primary};
 `
+
+export const Price = styled.span<{ $isFree: boolean }>`
+  font-size: ${({ theme }) => theme.fontSizes.lg};
+  font-weight: ${({ theme }) => theme.fontWeights.bold};
+  color: ${({ $isFree, theme }) => ($isFree ? theme.colors.success : theme.colors.text)};
+`

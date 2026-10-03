@@ -9,6 +9,7 @@ import InlineError from '../../components/InlineError'
 import LessonList from '../../components/LessonList'
 import { NAV_BY_ROLE, PUBLIC_NAV } from '../../config/nav'
 import { useAuth } from '../../hooks/useAuth'
+import { formatPrice } from '../../utils/price'
 import { useCourse } from '../../hooks/useCourse'
 import { useEnroll } from '../../hooks/useEnroll'
 import { useStudentDashboard } from '../../hooks/useDashboardQueries'
@@ -60,6 +61,7 @@ const CourseDetail: React.FC = () => {
                 </S.Meta>
               )}
 
+              <S.Price $isFree={course.data.price_cents === 0}>{formatPrice(course.data.price_cents)}</S.Price>
               <S.Actions>
                 {isEnrolled ? (
                   <>

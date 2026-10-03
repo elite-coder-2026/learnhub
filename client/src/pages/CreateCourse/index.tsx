@@ -52,6 +52,15 @@ const CreateCourse: React.FC = () => {
                 error={form.errors.title}
                 onChange={(e) => form.setTitle(e.target.value)}
               />
+              <Input
+                label="Price (USD)"
+                inputMode="decimal"
+                placeholder="0.00"
+                hint="Leave empty or 0 for a free course."
+                value={form.price}
+                error={form.errors.price}
+                onChange={(e) => form.setPrice(e.target.value)}
+              />
               <S.Field>
                 <S.Label htmlFor="course-description">Description</S.Label>
                 <S.TextArea

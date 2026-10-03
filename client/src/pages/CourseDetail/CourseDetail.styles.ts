@@ -56,3 +56,10 @@ export const LoadingBlock = styled.div`
   border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: ${({ theme }) => theme.borderRadius.lg};
 `
+
+export const Price = styled.p<{ $isFree: boolean }>`
+  margin: 0;
+  font-size: ${({ theme }) => theme.fontSizes.xl};
+  font-weight: ${({ theme }) => theme.fontWeights.bold};
+  color: ${({ $isFree, theme }) => ($isFree ? theme.colors.success : theme.colors.text)};
+`

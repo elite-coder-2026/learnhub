@@ -15,6 +15,7 @@ export interface ModuleDraft {
 
 export interface CourseFormErrors {
   title?: string
+  price?: string
   modules: Record<string, string>
   lessons: Record<string, string>
 }
@@ -22,12 +23,14 @@ export interface CourseFormErrors {
 export interface UseCourseFormResult {
   title: string
   description: string
+  price: string
   modules: ModuleDraft[]
   errors: CourseFormErrors
   hasErrors: boolean
   lessonCount: number
   setTitle: (title: string) => void
   setDescription: (description: string) => void
+  setPrice: (price: string) => void
   addModule: () => void
   removeModule: (moduleKey: string) => void
   updateModuleTitle: (moduleKey: string, title: string) => void
@@ -46,10 +49,19 @@ const createModule = (): ModuleDraft => ({
   lessons: [createLesson()],
 })
 
-const validate = (title: string, modules: ModuleDraft[]): CourseFormErrors => {
+const PRICE_PATTERN = /^\d+(\.\d{1,2})?$/
+const MAX_PRICE = 9999.99
+
+const toPriceCents = (price: string): number => (price.trim() === '' ? 0 : Math.round(Number(price) * 100))
+
+const validate = (title: string, price: string, modules: ModuleDraft[]): CourseFormErrors => {
   const errors: CourseFormErrors = { modules: {}, lessons: {} }
 
   if (!title.trim()) errors.title = 'Course title is required'
+  const trimmedPrice = price.trim()
+  if (trimmedPrice !== '' && (!PRICE_PATTERN.test(trimmedPrice) || Number(trimmedPrice) > MAX_PRICE)) {
+    errors.price = 'Enter a price between 0 and 9999.99, like 49.99'
+  }
 
   for (const courseModule of modules) {
     if (!courseModule.title.trim()) errors.modules[courseModule.key] = 'Module title is required'
@@ -64,12 +76,14 @@ const validate = (title: string, modules: ModuleDraft[]): CourseFormErrors => {
 export const useCourseForm = (): UseCourseFormResult => {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
+  const [price, setPrice] = useState('')
   const [modules, setModules] = useState<ModuleDraft[]>(() => [createModule()])
   const [isSubmitted, setIsSubmitted] = useState(false)
 
-  const validation = useMemo(() => validate(title, modules), [title, modules])
+  const validation = useMemo(() => validate(title, price, modules), [title, price, modules])
   const hasErrors =
     Boolean(validation.title) ||
+    Boolean(validation.price) ||
     Object.keys(validation.modules).length > 0 ||
     Object.keys(validation.lessons).length > 0
 
@@ -85,12 +99,14 @@ export const useCourseForm = (): UseCourseFormResult => {
   return {
     title,
     description,
+    price,
     modules,
     errors,
     hasErrors,
     lessonCount: modules.reduce((sum, m) => sum + m.lessons.length, 0),
     setTitle,
     setDescription,
+    setPrice,
     addModule: () => setModules((prev) => [...prev, createModule()]),
     removeModule: (moduleKey) => setModules((prev) => prev.filter((m) => m.key !== moduleKey)),
     updateModuleTitle: (moduleKey, nextTitle) =>
@@ -111,6 +127,7 @@ export const useCourseForm = (): UseCourseFormResult => {
     toInput: () => ({
       title: title.trim(),
       description: description.trim() || null,
+      priceCents: toPriceCents(price),
       modules: modules.map((m) => ({
         title: m.title.trim(),
         lessons: m.lessons.map((lesson) => ({

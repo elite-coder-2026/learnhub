@@ -7,6 +7,7 @@ import Button from '../Button'
 import ProgressBar from '../ProgressBar'
 import InlineError from '../InlineError'
 import { useEnroll } from '../../hooks/useEnroll'
+import { formatPrice } from '../../utils/price'
 import type { CourseWithStats } from '../../types/course'
 import type { UserRole } from '../../types/auth'
 import * as S from './CourseCard.styles'
@@ -78,6 +79,9 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, to, viewerRole, progres
                 </Button>
               </S.Action>
             </>
+          )}
+          {!(viewerRole === 'student' && isEnrolled) && (
+            <S.Price $isFree={course.price_cents === 0}>{formatPrice(course.price_cents)}</S.Price>
           )}
           {viewerRole === 'student' && !isEnrolled && (
             <S.Action>
