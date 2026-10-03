@@ -4,11 +4,13 @@ import {
   fetchAdminAnalytics,
   fetchInstructorAnalytics,
   fetchStudentDashboard,
+  fetchStudentActivity,
 } from '../services/dashboardService'
 import type {
   AdminAnalytics,
   InstructorCourseAnalytics,
   StudentDashboard,
+  DailyActivity,
 } from '../types/dashboard'
 
 export function useStudentDashboard(): UseQueryResult<StudentDashboard, Error> {
@@ -37,6 +39,15 @@ export function useAdminAnalytics(): UseQueryResult<AdminAnalytics, Error> {
   return useQuery<AdminAnalytics, Error>({
     queryKey: ['dashboard', 'admin'],
     queryFn: () => fetchAdminAnalytics(token as string),
+    enabled: token !== null,
+  })
+}
+
+export const useStudentActivity = (): UseQueryResult<DailyActivity[], Error> => {
+  const { token } = useAuth()
+  return useQuery<DailyActivity[], Error>({
+    queryKey: ['dashboard', 'student', 'activity'],
+    queryFn: async () => fetchStudentActivity(token ?? ''),
     enabled: token !== null,
   })
 }

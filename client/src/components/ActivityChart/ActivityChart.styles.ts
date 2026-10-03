@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import ReactEChartsCore from 'echarts-for-react/lib/core'
+import ReactEChartsCore from 'echarts-for-react/esm/core'
 
 export const Container = styled.div`
   padding: ${({ theme }) => theme.spacing[2]};

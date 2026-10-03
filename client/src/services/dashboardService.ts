@@ -3,6 +3,7 @@ import type {
   AdminAnalytics,
   InstructorCourseAnalytics,
   StudentDashboard,
+  DailyActivity,
 } from '../types/dashboard'
 
 interface ApiErrorBody {
@@ -46,3 +47,6 @@ export function fetchInstructorAnalytics(
 export function fetchAdminAnalytics(token: string): Promise<AdminAnalytics> {
   return getJson<AdminAnalytics>('/admin/analytics', token)
 }
+
+export const fetchStudentActivity = async (token: string): Promise<DailyActivity[]> =>
+  getJson<DailyActivity[]>('/dashboard/activity', token)

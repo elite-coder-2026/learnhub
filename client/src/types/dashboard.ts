@@ -36,3 +36,8 @@ export interface AdminAnalytics {
   active_users: AdminActiveUsers
   top_courses: AdminTopCourse[]
 }
+
+export interface DailyActivity {
+  date: string
+  lessons_completed: number
+}

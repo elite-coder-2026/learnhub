@@ -18,6 +18,7 @@ import InlineError from '../../components/InlineError'
 import StatCard from '../../components/StatCard'
 import CourseProgressCard from '../../components/CourseProgressCard'
 import EmptyState from '../../components/EmptyState'
+import ActivityChart, { type ActivityDay } from '../../components/ActivityChart'
 import { NAV_BY_ROLE } from '../../config/nav'
 import { useAuth } from '../../hooks/useAuth'
 import { useCurrentUser } from '../../hooks/useCurrentUser'
@@ -26,6 +27,7 @@ import {
   useAdminAnalytics,
   useInstructorAnalytics,
   useStudentDashboard,
+  useStudentActivity,
 } from '../../hooks/useDashboardQueries'
 import { useTheme } from 'styled-components'
 import type { UserRole } from '../../types/auth'
@@ -54,6 +56,35 @@ const LoadingRows = (): React.ReactElement => {
       ))}
     </S.CourseGrid>
   )
+}
+
+const weekdayFormatter = new Intl.DateTimeFormat('en-US', { weekday: 'short', timeZone: 'UTC' })
+
+const ActivityPanelBody = (): React.ReactElement => {
+  const theme = useTheme()
+  const activity = useStudentActivity()
+
+  if (activity.isLoading) return <Skeleton height={theme.sizes.chart} radius="md" />
+  if (activity.isError) return <InlineError message={activity.error.message} />
+
+  const days: ActivityDay[] = (activity.data ?? []).map((day) => ({
+    date: day.date,
+    label: weekdayFormatter.format(new Date(`${day.date}T00:00:00Z`)),
+    lessonsCompleted: day.lessons_completed,
+  }))
+
+  if (days.every((day) => day.lessonsCompleted === 0)) {
+    return (
+      <EmptyState
+        icon={InsightsIcon}
+        message="No lessons completed in the last 7 days."
+        ctaLabel="Continue learning"
+        ctaTo="/courses"
+      />
+    )
+  }
+
+  return <ActivityChart days={days} />
 }
 
 const StudentSection = (): React.ReactElement => {
@@ -124,12 +155,7 @@ const StudentSection = (): React.ReactElement => {
           <S.PanelTitle>Activity</S.PanelTitle>
           <S.PanelSubtitle>Lessons completed over the last 7 days</S.PanelSubtitle>
         </S.PanelHeader>
-        <EmptyState
-          icon={InsightsIcon}
-          message="Activity history isn't available yet."
-          ctaLabel="Go to courses"
-          ctaTo="/courses"
-        />
+        <ActivityPanelBody />
       </S.Panel>
     </>
   )
