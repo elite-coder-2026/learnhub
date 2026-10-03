@@ -11,21 +11,25 @@ This is not a tutorial project. Every decision reflects production standards.
 ```
 learnhub/
 ├── CLAUDE.md                  ← you are here
-├── frontend/
+├── README.md
+├── client/                    ← React frontend (there is no frontend/ folder)
 │   ├── CLAUDE.md              ← React/TypeScript/styled-components conventions
-│   └── src/
-├── backend/
+│   ├── src/                   ← pages/, components/, hooks/, services/, theme/, types/
+│   └── e2e/                   ← Playwright tests
+├── backend/                   ← Express API (no src/ folder — code is at backend/ root)
 │   ├── CLAUDE.md              ← four layer architecture/raw SQL conventions
-│   └── src/
+│   ├── server.ts, app.ts
+│   ├── routes/ controllers/ services/ queries/
+│   ├── config/ middleware/ types/ utils/ tests/
+│   └── database/
+│       ├── migrations/
+│       └── seeds/
 ├── fraud/                     ← Python fraud detection microservice
 │   ├── main.py
 │   ├── train.py
 │   ├── features.py
 │   └── requirements.txt
-├── database/
-│   ├── migrations/
-│   └── seeds/
-└── .env.example
+└── backend/.env.example
 ```
 
 Each domain has its own CLAUDE.md. Always read the domain-specific CLAUDE.md before generating any code for that domain.
