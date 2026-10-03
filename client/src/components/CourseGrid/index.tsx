@@ -4,12 +4,12 @@ import CourseCard from '../CourseCard'
 import Button from '../Button'
 import InlineError from '../InlineError'
 import Skeleton from '../Skeleton'
-import type { Course } from '../../types/course'
+import type { CourseWithStats } from '../../types/course'
 import type { UserRole } from '../../types/auth'
 import * as S from './CourseGrid.styles'
 
 interface CourseGridProps {
-  courses: Course[]
+  courses: CourseWithStats[]
   isLoading: boolean
   isError: boolean
   errorMessage?: string

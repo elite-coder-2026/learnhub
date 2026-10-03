@@ -2,6 +2,7 @@ import { apiGet, apiGetRaw, apiPost } from './apiClient'
 import type {
   Course,
   CourseLevel,
+  PopularCourse,
   CourseWithStructure,
   CreateCourseInput,
   Enrollment,
@@ -45,3 +46,6 @@ export function createCourse(
 ): Promise<CourseWithStructure> {
   return apiPost<CourseWithStructure>('/courses', input, token)
 }
+
+export const listPopularCourses = async (limit: number): Promise<PopularCourse[]> =>
+  apiGet<PopularCourse[]>(`/courses/popular?limit=${limit}`)

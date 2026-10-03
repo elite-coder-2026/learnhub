@@ -248,3 +248,9 @@ export const FooterLinks = styled.div`
     color: ${({ theme }) => theme.colors.primary};
   }
 `
+
+export const InstructorGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(${({ theme }) => theme.sizes.dropdown}, 100%), 1fr));
+  gap: ${({ theme }) => theme.spacing[4]};
+`

@@ -1,16 +1,18 @@
 import { useNavigate } from 'react-router-dom'
 import CategoryIcon from '@mui/icons-material/Category'
+import PeopleIcon from '@mui/icons-material/People'
+import PlayLessonIcon from '@mui/icons-material/PlayLesson'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import Button from '../Button'
 import ProgressBar from '../ProgressBar'
 import InlineError from '../InlineError'
 import { useEnroll } from '../../hooks/useEnroll'
-import type { Course } from '../../types/course'
+import type { CourseWithStats } from '../../types/course'
 import type { UserRole } from '../../types/auth'
 import * as S from './CourseCard.styles'
 
 interface CourseCardProps {
-  course: Course
+  course: CourseWithStats
   to: string
   viewerRole: UserRole | null
   progressPercent: number | null
@@ -39,12 +41,26 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, to, viewerRole, progres
         </S.Title>
         {course.description && <S.Description>{course.description}</S.Description>}
 
-        {course.category && (
+        {(course.category || course.lesson_count !== undefined || course.enrollment_count !== undefined) && (
           <S.MetaRow>
-            <S.MetaItem>
-              <CategoryIcon fontSize="inherit" aria-hidden="true" />
-              {course.category}
-            </S.MetaItem>
+            {course.category && (
+              <S.MetaItem>
+                <CategoryIcon fontSize="inherit" aria-hidden="true" />
+                {course.category}
+              </S.MetaItem>
+            )}
+            {course.lesson_count !== undefined && (
+              <S.MetaItem>
+                <PlayLessonIcon fontSize="inherit" aria-hidden="true" />
+                {course.lesson_count} {course.lesson_count === 1 ? 'lesson' : 'lessons'}
+              </S.MetaItem>
+            )}
+            {course.enrollment_count !== undefined && (
+              <S.MetaItem>
+                <PeopleIcon fontSize="inherit" aria-hidden="true" />
+                {course.enrollment_count} {course.enrollment_count === 1 ? 'student' : 'students'}
+              </S.MetaItem>
+            )}
           </S.MetaRow>
         )}
 

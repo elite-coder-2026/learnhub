@@ -7,12 +7,19 @@ import CastForEducationIcon from '@mui/icons-material/CastForEducation'
 import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium'
 import Button from '../../components/Button'
 import CourseGrid from '../../components/CourseGrid'
+import InstructorCard from '../../components/InstructorCard'
+import InlineError from '../../components/InlineError'
+import Skeleton from '../../components/Skeleton'
+import { useTheme } from 'styled-components'
+import { usePopularCourses, useTopInstructors } from '../../hooks/useHomeHighlights'
 import { useAuth } from '../../hooks/useAuth'
 import { useCourses } from '../../hooks/useCourses'
 import type { Course } from '../../types/course'
 import * as S from './Home.styles'
 
 const NEW_COURSE_COUNT = 4
+const HIGHLIGHT_COUNT = 4
+const INSTRUCTOR_SKELETON_KEYS = ['instructor-a', 'instructor-b', 'instructor-c', 'instructor-d']
 const CATEGORY_COUNT = 6
 const NO_PROGRESS = new Map<string, number>()
 
@@ -46,7 +53,10 @@ const VALUE_POINTS = [
 const Home: React.FC = () => {
   const { user } = useAuth()
   const navigate = useNavigate()
+  const theme = useTheme()
   const { data, isLoading, isError, error } = useCourses({ search: '', level: null })
+  const popular = usePopularCourses(HIGHLIGHT_COUNT)
+  const instructors = useTopInstructors(HIGHLIGHT_COUNT)
 
   const courses = useMemo(() => data?.pages.flatMap((page) => page.data) ?? [], [data])
   const categories = useMemo(() => summarizeCategories(courses), [courses])
@@ -64,6 +74,8 @@ const Home: React.FC = () => {
           </S.Brand>
           <S.HeaderNav aria-label="Main">
             <S.NavAnchor href="#categories">Categories</S.NavAnchor>
+            <S.NavAnchor href="#popular-courses">Popular</S.NavAnchor>
+            <S.NavAnchor href="#top-instructors">Instructors</S.NavAnchor>
             <S.NavAnchor href="#new-courses">New courses</S.NavAnchor>
           </S.HeaderNav>
           <S.HeaderActions>
@@ -132,6 +144,44 @@ const Home: React.FC = () => {
             </S.CategoryGrid>
           </S.Section>
         )}
+
+        <S.Section id="popular-courses">
+          <S.SectionTitle>Popular courses</S.SectionTitle>
+          <CourseGrid
+            courses={popular.data ?? []}
+            isLoading={popular.isLoading}
+            isError={popular.isError}
+            errorMessage={popular.error?.message}
+            emptyMessage="No courses are available yet."
+            hasActiveFilters={false}
+            viewerRole={user?.role ?? null}
+            progressByCourseId={NO_PROGRESS}
+            buildHref={(id) => `/courses/${id}`}
+            onClearFilters={() => undefined}
+          />
+        </S.Section>
+
+        <S.Section id="top-instructors">
+          <S.SectionTitle>Top instructors</S.SectionTitle>
+          {instructors.isLoading && (
+            <S.InstructorGrid aria-busy="true" aria-label="Loading instructors">
+              {INSTRUCTOR_SKELETON_KEYS.map((key) => (
+                <Skeleton key={key} height={theme.sizes.thumbnail} radius="lg" />
+              ))}
+            </S.InstructorGrid>
+          )}
+          {instructors.isError && <InlineError message={instructors.error.message} />}
+          {instructors.data && instructors.data.length === 0 && (
+            <S.CardText>No instructors have published courses yet.</S.CardText>
+          )}
+          {instructors.data && instructors.data.length > 0 && (
+            <S.InstructorGrid>
+              {instructors.data.map((instructor) => (
+                <InstructorCard key={instructor.id} instructor={instructor} />
+              ))}
+            </S.InstructorGrid>
+          )}
+        </S.Section>
 
         <S.Section id="new-courses">
           <S.SectionTitle>New courses</S.SectionTitle>

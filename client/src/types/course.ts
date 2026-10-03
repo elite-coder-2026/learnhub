@@ -76,3 +76,10 @@ export interface CourseProgress {
   percent_complete: number
   lessons: LessonProgress[]
 }
+
+export interface PopularCourse extends Course {
+  enrollment_count: number
+  lesson_count: number
+}
+
+export type CourseWithStats = Course & Partial<Pick<PopularCourse, 'enrollment_count' | 'lesson_count'>>
