@@ -148,7 +148,11 @@ const toSlug = (value: string): string => value.toLowerCase().replace(/[^a-z0-9]
 const findOrCreateUser = async (user: SeedUser): Promise<string> => {
   const existing = await authQueries.findUserByEmail(user.email)
   if (existing) return existing.id
-  const created = await authService.register({ ...user, password: SEED_PASSWORD })
+  const account = { ...user, password: SEED_PASSWORD }
+  const created =
+    user.userRole === 'admin'
+      ? await authService.createAdmin(account)
+      : await authService.register(account)
   console.log(`  created user ${user.email}`)
   return created.userId
 }

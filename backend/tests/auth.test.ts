@@ -52,6 +52,18 @@ describe('Auth', () => {
     expect(res.status).toBe(400)
   })
 
+  it('rejects self-registration as an admin', async () => {
+    const res = await request(app).post('/auth/register').send({
+      email: `admin-${randomUUID()}@test.com`,
+      password: 'password123',
+      firstName: 'Ada',
+      lastName: 'Lovelace',
+      userRole: 'admin'
+    })
+
+    expect(res.status).toBe(400)
+  })
+
   it('logs in with correct credentials', async () => {
     const email = `student-${randomUUID()}@test.com`
     await request(app).post('/auth/register').send({

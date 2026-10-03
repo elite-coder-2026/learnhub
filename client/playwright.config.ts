@@ -30,9 +30,12 @@ const apiPort = process.env.E2E_API_PORT ?? '3001'
 const webPort = process.env.E2E_WEB_PORT ?? '5174'
 const apiUrl = `http://localhost:${apiPort}`
 process.env.E2E_API_URL = apiUrl
+process.env.E2E_RESOLVED_DATABASE_URL = testDatabaseUrl
+process.env.E2E_BACKEND_DIR = BACKEND_DIR
 
 export default defineConfig({
   testDir: './e2e',
+  globalSetup: './e2e/global-setup.ts',
   fullyParallel: true,
   reporter: 'html',
   use: {

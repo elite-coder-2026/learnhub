@@ -6,17 +6,13 @@ import { UnauthorizedError, ValidationError } from '../utils/errors'
 import { JWT_SECRET, JWT_EXPIRES_IN } from '../config/env'
 
 const SALT_ROUNDS = 12
-const VALID_ROLES = ['student', 'instructor', 'admin']
+const SELF_REGISTER_ROLES = ['student', 'instructor']
 
 const signToken = (userId: string, userRole: string): string => {
   return jwt.sign({ sub: userId, role: userRole }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN })
 }
 
-export const register = async (input: RegisterInput): Promise<AuthResult> => {
-  if (!VALID_ROLES.includes(input.userRole)) {
-    throw new ValidationError(`userRole must be one of: ${VALID_ROLES.join(', ')}`)
-  }
-
+const createAccount = async (input: RegisterInput): Promise<AuthResult> => {
   const existingUser = await authQueries.findUserByEmail(input.email)
   if (existingUser) throw new ValidationError('Email is already registered')
 
@@ -31,6 +27,16 @@ export const register = async (input: RegisterInput): Promise<AuthResult> => {
 
   return { token: signToken(user.id, user.user_role), userId: user.id }
 }
+
+export const register = async (input: RegisterInput): Promise<AuthResult> => {
+  if (!SELF_REGISTER_ROLES.includes(input.userRole)) {
+    throw new ValidationError(`userRole must be one of: ${SELF_REGISTER_ROLES.join(', ')}`)
+  }
+  return createAccount(input)
+}
+
+export const createAdmin = async (input: Omit<RegisterInput, 'userRole'>): Promise<AuthResult> =>
+  createAccount({ ...input, userRole: 'admin' })
 
 export const login = async (input: LoginInput): Promise<AuthResult> => {
   const user = await authQueries.findUserByEmail(input.email)

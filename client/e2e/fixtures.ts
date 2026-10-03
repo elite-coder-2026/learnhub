@@ -19,6 +19,7 @@ interface E2eFixtures {
 }
 
 const E2E_PASSWORD = 'e2e-password-123'
+const SEEDED_ADMIN = { email: 'admin@learnhub.dev', password: 'password123' }
 
 const getApiUrl = (): string => {
   const apiUrl = process.env.E2E_API_URL
@@ -27,12 +28,14 @@ const getApiUrl = (): string => {
 }
 
 const ensureUser = async (request: APIRequestContext, apiUrl: string, role: E2eRole): Promise<E2eUser> => {
-  const email = `e2e-${role}@learnhub.test`
-  const loginResponse = await request.post(`${apiUrl}/auth/login`, { data: { email, password: E2E_PASSWORD } })
+  const { email, password } =
+    role === 'admin' ? SEEDED_ADMIN : { email: `e2e-${role}@learnhub.test`, password: E2E_PASSWORD }
+  const loginResponse = await request.post(`${apiUrl}/auth/login`, { data: { email, password } })
   if (loginResponse.ok()) {
     const body = (await loginResponse.json()) as AuthResponse
-    return { email, password: E2E_PASSWORD, token: body.data.token }
+    return { email, password, token: body.data.token }
   }
+  expect(role, 'the admin comes from the seed and cannot self-register').not.toBe('admin')
 
   const registerResponse = await request.post(`${apiUrl}/auth/register`, {
     data: { email, password: E2E_PASSWORD, firstName: 'E2E', lastName: role, userRole: role },

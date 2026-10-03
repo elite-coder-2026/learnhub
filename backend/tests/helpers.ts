@@ -1,6 +1,7 @@
 import request from 'supertest'
 import { randomUUID } from 'crypto'
 import { app } from '../app'
+import * as authService from '../services/auth.service'
 
 export interface TestUser {
   token: string
@@ -10,6 +11,10 @@ export interface TestUser {
 
 export const registerUser = async (role: 'student' | 'instructor' | 'admin'): Promise<TestUser> => {
   const email = `${role}-${randomUUID()}@test.com`
+  if (role === 'admin') {
+    const admin = await authService.createAdmin({ email, password: 'password123', firstName: 'Test', lastName: role })
+    return { token: admin.token, userId: admin.userId, email }
+  }
   const res = await request(app).post('/auth/register').send({
     email,
     password: 'password123',
