@@ -166,6 +166,7 @@ const CoursePlayer: React.FC = () => {
             {course.data && (
               <LessonList
                 modules={course.data.modules}
+                courseTitle={course.data.title}
                 completedLessonIds={completedLessonIds}
                 activeLessonId={lessonId}
                 buildHref={buildLessonHref}
