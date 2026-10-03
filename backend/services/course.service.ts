@@ -1,8 +1,8 @@
 import { PoolClient } from 'pg'
-import { pool } from '../config/db'
 import * as courseQueries from '../queries/course.query'
 import * as lessonQueries from '../queries/lesson.query'
 import * as enrollmentQueries from '../queries/enrollment.query'
+import { withTransaction } from '../queries/transaction.query'
 import {
   Course,
   CourseAnalytics,
@@ -19,25 +19,6 @@ import {
   DownloadableLesson
 } from '../types/course.type'
 import { NotFoundError, UnauthorizedError, ValidationError } from '../utils/errors'
-
-const withTransaction = async <T>(fn: (client: PoolClient) => Promise<T>): Promise<T> => {
-  const client = await pool.connect()
-  try {
-    await client.query('BEGIN')
-    const result = await fn(client)
-    await client.query('COMMIT')
-    return result
-  } catch (error) {
-    try {
-      await client.query('ROLLBACK')
-    } catch (rollbackError) {
-      console.error('Rollback failed:', rollbackError)
-    }
-    throw error
-  } finally {
-    client.release()
-  }
-}
 
 const validateCreateCourseInput = (input: CreateCourseInput): void => {
   if (!input.title.trim()) throw new ValidationError('Course title is required')
