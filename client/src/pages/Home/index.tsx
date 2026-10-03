@@ -3,11 +3,9 @@ import { Link, useNavigate } from 'react-router-dom'
 import SchoolIcon from '@mui/icons-material/School'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import { getCategoryMeta } from '../../config/categories'
-import AutoStoriesIcon from '@mui/icons-material/AutoStories'
-import CastForEducationIcon from '@mui/icons-material/CastForEducation'
-import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium'
 import Button from '../../components/Button'
 import CourseGrid from '../../components/CourseGrid'
+import FeaturesSection from '../../components/FeaturesSection'
 import InstructorCard from '../../components/InstructorCard'
 import InlineError from '../../components/InlineError'
 import Skeleton from '../../components/Skeleton'
@@ -44,12 +42,6 @@ const newestFirst = (courses: Course[]): Course[] =>
   [...courses]
     .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
     .slice(0, NEW_COURSE_COUNT)
-
-const VALUE_POINTS = [
-  { icon: AutoStoriesIcon, title: 'Learn at your pace', text: 'Structured modules and lessons you can pick up anytime.' },
-  { icon: CastForEducationIcon, title: 'Teach what you know', text: 'Instructors build courses with modules, lessons, and analytics.' },
-  { icon: WorkspacePremiumIcon, title: 'Earn certificates', text: 'Finish a course and get a certificate of completion.' },
-]
 
 const Home: React.FC = () => {
   const { user } = useAuth()
@@ -115,17 +107,7 @@ const Home: React.FC = () => {
           </S.HeroActions>
         </S.Hero>
 
-        <S.ValueGrid>
-          {VALUE_POINTS.map(({ icon: Icon, title, text }) => (
-            <S.ValueCard key={title}>
-              <S.IconBadge aria-hidden="true">
-                <Icon fontSize="inherit" />
-              </S.IconBadge>
-              <S.CardTitle>{title}</S.CardTitle>
-              <S.CardText>{text}</S.CardText>
-            </S.ValueCard>
-          ))}
-        </S.ValueGrid>
+        <FeaturesSection />
 
         {categories.length > 0 && (
           <S.Section id="categories">
