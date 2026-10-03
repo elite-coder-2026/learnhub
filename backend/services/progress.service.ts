@@ -4,7 +4,7 @@ import * as progressQueries from '../queries/progress.query'
 import * as certificateService from './certificate.service'
 import { Enrollment } from '../types/enrollment.type'
 import { Lesson } from '../types/course.type'
-import { CourseProgress, LessonProgress, StudentDashboard } from '../types/progress.type'
+import { CourseProgress, DailyActivity, LessonProgress, StudentDashboard } from '../types/progress.type'
 import { NotFoundError, UnauthorizedError } from '../utils/errors'
 
 interface ResolvedEnrollment {
@@ -80,3 +80,8 @@ export const getStudentDashboard = async (studentId: string): Promise<StudentDas
 
   return { inProgress, completed }
 }
+
+const ACTIVITY_DAYS = 7
+
+export const getStudentActivity = async (studentId: string): Promise<DailyActivity[]> =>
+  progressQueries.findDailyLessonCompletions(studentId, ACTIVITY_DAYS)

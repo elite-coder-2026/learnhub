@@ -1,5 +1,5 @@
 import { pool } from '../config/db'
-import { DashboardCourse, LessonProgress, LessonStatus } from '../types/progress.type'
+import { DailyActivity, DashboardCourse, LessonProgress, LessonStatus } from '../types/progress.type'
 
 export const markLessonComplete = async (
   enrollmentId: string,
@@ -78,6 +78,30 @@ export const findLessonStatusesForCourse = async (
        AND m.deleted_at IS NULL
      ORDER BY m.position , l.position `,
     [courseId, enrollmentId]
+  )
+  return result.rows
+}
+
+export const findDailyLessonCompletions = async (studentId: string, days: number): Promise<DailyActivity[]> => {
+  const result = await pool.query<DailyActivity>(
+    `SELECT to_char(d.day, 'YYYY-MM-DD') AS date,
+            COUNT(lp.id)::int AS lessons_completed
+     FROM generate_series(
+            (NOW() AT TIME ZONE 'UTC')::date - ($2::int - 1),
+            (NOW() AT TIME ZONE 'UTC')::date,
+            INTERVAL '1 day'
+          ) AS d(day)
+     LEFT JOIN nx.enrollments e
+       ON e.student_id = $1
+      AND e.deleted_at IS NULL
+     LEFT JOIN nx.lesson_progress lp
+       ON lp.enrollment_id = e.id
+      AND lp.deleted_at IS NULL
+      AND lp.completed_at IS NOT NULL
+      AND (lp.completed_at AT TIME ZONE 'UTC')::date = d.day::date
+     GROUP BY d.day
+     ORDER BY d.day`,
+    [studentId, days]
   )
   return result.rows
 }

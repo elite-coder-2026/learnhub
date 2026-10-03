@@ -89,3 +89,13 @@ export const getDashboard = async (req: Request, res: Response): Promise<void> =
     res.status(500).json({ error: 'Internal server error' })
   }
 }
+
+export const getDashboardActivity = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const activity = await progressService.getStudentActivity(req.user!.id)
+    res.json({ data: activity })
+  } catch (error) {
+    console.error(error)
+    res.status(500).json({ error: 'Internal server error' })
+  }
+}

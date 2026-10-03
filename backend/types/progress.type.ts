@@ -43,3 +43,8 @@ export interface StudentDashboard {
   inProgress: DashboardCourse[]
   completed: DashboardCourse[]
 }
+
+export interface DailyActivity {
+  date: string
+  lessons_completed: number
+}
