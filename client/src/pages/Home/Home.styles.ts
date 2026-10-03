@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import type { AppTheme } from '../../theme'
 
 export const Page = styled.div`
+  overflow-x: clip;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
@@ -142,37 +143,9 @@ export const HeroActions = styled.div`
   margin-top: ${({ theme }) => theme.spacing[2]};
 `
 
-export const ValueGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(${({ theme }) => theme.sizes.courseCardMin}, 100%), 1fr));
-  gap: ${({ theme }) => theme.spacing[6]};
-`
-
 const cardBase = `
   display: flex;
   flex-direction: column;
-`
-
-export const ValueCard = styled.div`
-  ${cardBase}
-  gap: ${({ theme }) => theme.spacing[2]};
-  padding: ${({ theme }) => theme.spacing[6]};
-  background: ${({ theme }) => theme.colors.surface};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.radii.lg};
-  box-shadow: ${({ theme }) => theme.shadows.card};
-`
-
-export const IconBadge = styled.span`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: ${({ theme }) => theme.sizes.iconBadge};
-  height: ${({ theme }) => theme.sizes.iconBadge};
-  font-size: ${({ theme }) => theme.fontSizes.xl};
-  color: ${({ theme }) => theme.colors.primary};
-  background: ${({ theme }) => theme.colors.primarySoft};
-  border-radius: ${({ theme }) => theme.radii.full};
 `
 
 export const CardTitle = styled.h3`
