@@ -1,5 +1,6 @@
 import * as courseQueries from '../queries/course.query'
 import * as enrollmentQueries from '../queries/enrollment.query'
+import * as searchQueries from '../queries/search.queries'
 import * as userQueries from '../queries/user.query'
 import { evaluateEnrollmentForFraud } from './fraud.service'
 import { Course, CourseSearchFilters } from '../types/course.type'
@@ -24,7 +25,8 @@ export const searchCourses = async (
   cursor: string | null,
   limit: number
 ): Promise<PaginatedResponse<Course>> => {
-  const rows = await courseQueries.searchCoursesPaginated(filters, cursor, limit + 1)
+  const { search, ...filter } = filters
+  const rows = await searchQueries.searchCourses(search, filter, cursor, limit + 1)
   const hasMore = rows.length > limit
   const data = hasMore ? rows.slice(0, limit) : rows
   const nextCursor = hasMore ? data[data.length - 1].id : null
