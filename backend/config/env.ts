@@ -7,6 +7,15 @@ if (!jwtSecret) {
 export const JWT_SECRET: string = jwtSecret
 export const JWT_EXPIRES_IN = '1h' as const
 
+const databaseUrl: string | undefined = process.env.DATABASE_URL
+
+if (!databaseUrl) {
+  throw new Error('DATABASE_URL environment variable is not set')
+}
+
+export const DATABASE_URL: string = databaseUrl
+export const PORT: number = process.env.PORT ? Number(process.env.PORT) : 3000
+
 export const SMTP_HOST: string | undefined = process.env.SMTP_HOST
 export const SMTP_PORT: number = process.env.SMTP_PORT ? Number(process.env.SMTP_PORT) : 587
 export const SMTP_USER: string | undefined = process.env.SMTP_USER
