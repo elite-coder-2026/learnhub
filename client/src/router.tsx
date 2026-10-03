@@ -1,4 +1,5 @@
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route } from 'react-router-dom'
+import Home from './pages/Home'
 import Register from './pages/Register'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
@@ -7,17 +8,11 @@ import CreateCourse from './pages/CreateCourse'
 import CourseDetail from './pages/CourseDetail'
 import CoursePlayer from './pages/CoursePlayer'
 import ProtectedRoute from './components/ProtectedRoute'
-import { useAuth } from './hooks/useAuth'
-
-function HomeRedirect(): React.ReactElement {
-  const { user } = useAuth()
-  return <Navigate to={user ? '/dashboard' : '/login'} replace />
-}
 
 function AppRoutes(): React.ReactElement {
   return (
     <Routes>
-      <Route path="/" element={<HomeRedirect />} />
+      <Route path="/" element={<Home />} />
       <Route path="/register" element={<Register />} />
       <Route path="/login" element={<Login />} />
       <Route
