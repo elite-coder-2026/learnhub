@@ -1,5 +1,7 @@
 import type { SvgIconComponent } from '@mui/icons-material'
 import SchoolIcon from '@mui/icons-material/School'
+import { useLocation } from 'react-router-dom'
+import { findActiveNavItem } from '../../utils/nav'
 import * as S from './Sidebar.styles'
 
 export interface SidebarNavItem {
@@ -13,7 +15,11 @@ interface SidebarProps {
   isCollapsed: boolean
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ items, isCollapsed }) => (
+const Sidebar: React.FC<SidebarProps> = ({ items, isCollapsed }) => {
+  const { pathname } = useLocation()
+  const activeTo = findActiveNavItem(items, pathname)?.to
+
+  return (
   <S.Container>
     <S.Brand>
       <S.LogoBadge>
@@ -25,7 +31,13 @@ const Sidebar: React.FC<SidebarProps> = ({ items, isCollapsed }) => (
       <S.List>
         {items.map(({ label, to, icon: Icon }) => (
           <li key={to}>
-            <S.Link to={to} title={label} aria-label={label}>
+            <S.Link
+              to={to}
+              title={label}
+              aria-label={label}
+              aria-current={to === activeTo ? 'page' : undefined}
+              $isActive={to === activeTo}
+            >
               <S.IconSlot>
                 <Icon fontSize="inherit" />
               </S.IconSlot>
@@ -36,6 +48,7 @@ const Sidebar: React.FC<SidebarProps> = ({ items, isCollapsed }) => (
       </S.List>
     </S.Nav>
   </S.Container>
-)
+  )
+}
 
 export default Sidebar

@@ -63,6 +63,14 @@ export const PanelHeader = styled.div`
   gap: ${({ theme }) => theme.spacing[1]};
 `
 
+export const PanelHeaderRow = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: ${({ theme }) => theme.spacing[3]};
+`
+
 export const PanelTitle = styled.h2`
   font-size: ${({ theme }) => theme.fontSizes.lg};
   font-weight: ${({ theme }) => theme.fontWeights.semibold};

@@ -8,6 +8,9 @@ import GroupsIcon from '@mui/icons-material/Groups'
 import SchoolIcon from '@mui/icons-material/School'
 import PeopleIcon from '@mui/icons-material/People'
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings'
+import AddIcon from '@mui/icons-material/Add'
+import { useNavigate } from 'react-router-dom'
+import Button from '../../components/Button'
 import AppShell from '../../components/AppShell'
 import Container from '../../components/Container'
 import Skeleton from '../../components/Skeleton'
@@ -134,6 +137,7 @@ const StudentSection = (): React.ReactElement => {
 
 const InstructorSection = (): React.ReactElement => {
   const { data, isLoading, isError, error } = useInstructorAnalytics()
+  const navigate = useNavigate()
 
   if (isLoading) {
     return (
@@ -156,15 +160,19 @@ const InstructorSection = (): React.ReactElement => {
       </S.StatGrid>
 
       <S.Panel>
-        <S.PanelHeader>
+        <S.PanelHeaderRow>
           <S.PanelTitle>Course performance</S.PanelTitle>
-        </S.PanelHeader>
+          <Button size="sm" onClick={() => navigate('/courses/new')}>
+            <AddIcon fontSize="inherit" />
+            Create course
+          </Button>
+        </S.PanelHeaderRow>
         {data.length === 0 ? (
           <EmptyState
             icon={MenuBookIcon}
             message="You have not published any courses yet."
-            ctaLabel="Go to courses"
-            ctaTo="/courses"
+            ctaLabel="Create your first course"
+            ctaTo="/courses/new"
           />
         ) : (
           <S.List>

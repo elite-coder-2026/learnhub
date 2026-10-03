@@ -1,5 +1,5 @@
 import styled, { css } from 'styled-components'
-import { NavLink } from 'react-router-dom'
+import { Link as RouterLink } from 'react-router-dom'
 
 const hiddenWhenCollapsed = css<{ $isCollapsed: boolean }>`
   white-space: nowrap;
@@ -67,7 +67,7 @@ export const List = styled.ul`
   list-style: none;
 `
 
-export const Link = styled(NavLink)`
+export const Link = styled(RouterLink)<{ $isActive: boolean }>`
   display: flex;
   align-items: center;
   gap: ${({ theme }) => theme.spacing[3]};
@@ -85,11 +85,16 @@ export const Link = styled(NavLink)`
     background: ${({ theme }) => theme.colors.sidebarHover};
   }
 
-  &.active {
-    color: ${({ theme }) => theme.colors.sidebarActive};
-    background: ${({ theme }) => theme.colors.primary};
-    font-weight: ${({ theme }) => theme.fontWeights.semibold};
-  }
+  ${({ $isActive, theme }) =>
+    $isActive &&
+    `
+    &&,
+    &&:hover {
+      color: ${theme.colors.sidebarActive};
+      background: ${theme.colors.primary};
+      font-weight: ${theme.fontWeights.semibold};
+    }
+  `}
 
   &:focus-visible {
     outline: 2px solid ${({ theme }) => theme.colors.primary};

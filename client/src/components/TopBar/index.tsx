@@ -3,6 +3,7 @@ import MenuIcon from '@mui/icons-material/Menu'
 import { useAuth } from '../../hooks/useAuth'
 import { useCurrentUser } from '../../hooks/useCurrentUser'
 import Button from '../Button'
+import { findActiveNavItem } from '../../utils/nav'
 import type { SidebarNavItem } from '../Sidebar'
 import * as S from './TopBar.styles'
 
@@ -11,12 +12,8 @@ interface TopBarProps {
   onToggleSidebar: () => void
 }
 
-const findPageTitle = (navItems: SidebarNavItem[], pathname: string): string => {
-  const match = navItems
-    .filter((item) => pathname === item.to || pathname.startsWith(`${item.to}/`))
-    .sort((a, b) => b.to.length - a.to.length)[0]
-  return match?.label ?? 'LearnHub'
-}
+const findPageTitle = (navItems: SidebarNavItem[], pathname: string): string =>
+  findActiveNavItem(navItems, pathname)?.label ?? 'LearnHub'
 
 const getInitials = (firstName: string | null, lastName: string | null, fallback: string): string => {
   const initials = `${firstName?.charAt(0) ?? ''}${lastName?.charAt(0) ?? ''}`.toUpperCase()
