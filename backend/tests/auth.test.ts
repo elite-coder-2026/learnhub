@@ -68,6 +68,44 @@ describe('Auth', () => {
     expect(res.body.data.token).toEqual(expect.any(String))
   })
 
+  it('records the login time on successful login', async () => {
+    const email = `student-${randomUUID()}@test.com`
+    const registerRes = await request(app).post('/auth/register').send({
+      email,
+      password: 'password123',
+      firstName: 'Ada',
+      lastName: 'Lovelace',
+      userRole: 'student'
+    })
+    const { token, userId } = registerRes.body.data
+
+    const beforeLogin = await request(app).get(`/users/${userId}`).set('Authorization', `Bearer ${token}`)
+    expect(beforeLogin.body.data.last_login_at).toBeNull()
+
+    const loginRes = await request(app).post('/auth/login').send({ email, password: 'password123' })
+    expect(loginRes.status).toBe(200)
+
+    const afterLogin = await request(app).get(`/users/${userId}`).set('Authorization', `Bearer ${token}`)
+    expect(afterLogin.body.data.last_login_at).toEqual(expect.any(String))
+  })
+
+  it('does not record a login time on a failed login', async () => {
+    const email = `student-${randomUUID()}@test.com`
+    const registerRes = await request(app).post('/auth/register').send({
+      email,
+      password: 'password123',
+      firstName: 'Ada',
+      lastName: 'Lovelace',
+      userRole: 'student'
+    })
+    const { token, userId } = registerRes.body.data
+
+    await request(app).post('/auth/login').send({ email, password: 'wrongpassword' })
+
+    const res = await request(app).get(`/users/${userId}`).set('Authorization', `Bearer ${token}`)
+    expect(res.body.data.last_login_at).toBeNull()
+  })
+
   it('rejects login with wrong password', async () => {
     const email = `student-${randomUUID()}@test.com`
     await request(app).post('/auth/register').send({
