@@ -5,8 +5,8 @@ import { User } from '../types/user.type'
 import { NotFoundError, ValidationError } from '../utils/errors'
 import { paramString } from '../utils/params'
 
-const toSafeUser = (user: User): Omit<User, 'password' | 'password_hash'> => {
-  const { password: _password, password_hash: _passwordHash, ...safeUser } = user
+const toSafeUser = (user: User): Omit<User, 'password_hash'> => {
+  const { password_hash: _passwordHash, ...safeUser } = user
   return safeUser
 }
 
