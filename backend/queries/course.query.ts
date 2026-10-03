@@ -1,6 +1,6 @@
 import { PoolClient } from 'pg'
 import { pool } from '../config/db'
-import { Course, CourseAnalytics, Module, Lesson } from '../types/course.type'
+import { Course, CourseAnalytics, CourseLevel, Module, Lesson } from '../types/course.type'
 
 export const insertCourse = async (
     client: PoolClient,
@@ -197,6 +197,22 @@ export const updateModule = async (id: string, title: string, position: number):
     [id, title, position]
   )
   return result.rows[0] ?? null
+}
+
+export const setCourseCategoryAndLevel = async (
+  id: string,
+  category: string | null,
+  level: CourseLevel | null
+): Promise<void> => {
+  await pool.query(
+    `UPDATE nx.courses
+     SET category = $2,
+         level = $3,
+         updated_at = NOW()
+     WHERE id = $1
+       AND deleted_at IS NULL`,
+    [id, category, level]
+  )
 }
 
 export const softDeleteCourse = async (id: string): Promise<void> => {

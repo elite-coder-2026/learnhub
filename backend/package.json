@@ -9,6 +9,7 @@
     "start": "ts-node server.ts",
     "test": "jest",
     "seed": "ts-node database/seeds/seed.ts",
+    "cleanup:fixtures": "ts-node scripts/cleanupFixtureCourses.ts",
     "lint": "eslint ."
   },
   "dependencies": {

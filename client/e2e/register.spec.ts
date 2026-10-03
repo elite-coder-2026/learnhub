@@ -22,7 +22,7 @@ test.describe('Register page', () => {
     await fillValidForm(page)
     await page.getByRole('button', { name: 'Create account' }).click()
 
-    await expect(page.getByRole('status')).toHaveText('Account created. You can now sign in.')
+    await expect(page.getByRole('status').filter({ hasText: 'Account created' })).toHaveText('Account created. You can now sign in.')
   })
 
   test('shows inline validation errors without calling the network', async ({ page }) => {
@@ -73,7 +73,7 @@ test.describe('Register page', () => {
     await page.getByRole('option', { name: 'Instructor' }).click()
     await page.getByRole('button', { name: 'Create account' }).click()
 
-    await expect(page.getByRole('status')).toBeVisible()
+    await expect(page.getByRole('status').filter({ hasText: 'Account created' })).toBeVisible()
     expect(capturedBody.userRole).toBe('instructor')
   })
 })
