@@ -1,26 +1,9 @@
 import { pool } from '../config/db'
 import { User } from '../types/user.type'
 
-export const createUser = async (
-  email: string,
-  password: string,
-  passwordHash: string,
-  firstName: string,
-  lastName: string,
-  userRole: string
-): Promise<User> => {
-  const result = await pool.query<User>(
-    `INSERT INTO nx.users (email, password, password_hash, first_name, last_name, user_role)
-     VALUES ($1, $2, $3, $4, $5, $6)
-     RETURNING id, email, password, password_hash, avatar_url, user_role, first_name, last_name, is_active, is_email_verified, created_at, updated_at`,
-    [email, password, passwordHash, firstName, lastName, userRole]
-  )
-  return result.rows[0]
-}
-
 export const findUserById = async (id: string): Promise<User | null> => {
   const result = await pool.query<User>(
-    `SELECT id, email, password, password_hash, avatar_url, user_role, first_name, last_name, is_active, is_email_verified, created_at, updated_at
+    `SELECT id, email, password_hash, avatar_url, user_role, first_name, last_name, is_active, is_email_verified, last_login_at, created_at, updated_at
      FROM nx.users
      WHERE id = $1
        AND deleted_at IS NULL`,
@@ -31,7 +14,7 @@ export const findUserById = async (id: string): Promise<User | null> => {
 
 export const findUsersPaginated = async (cursor: string | null, limit: number): Promise<User[]> => {
   const result = await pool.query<User>(
-    `SELECT id, email, password, password_hash, avatar_url, user_role, first_name, last_name, is_active, is_email_verified, created_at, updated_at
+    `SELECT id, email, password_hash, avatar_url, user_role, first_name, last_name, is_active, is_email_verified, last_login_at, created_at, updated_at
      FROM nx.users
      WHERE deleted_at IS NULL
        AND ($1::uuid IS NULL OR id > $1::uuid)
@@ -56,7 +39,7 @@ export const updateUser = async (
          updated_at = NOW()
      WHERE id = $1
        AND deleted_at IS NULL
-     RETURNING id, email, password, password_hash, avatar_url, user_role, first_name, last_name, is_active, is_email_verified, created_at, updated_at`,
+     RETURNING id, email, password_hash, avatar_url, user_role, first_name, last_name, is_active, is_email_verified, last_login_at, created_at, updated_at`,
     [id, firstName, lastName, userRole]
   )
   return result.rows[0] ?? null
