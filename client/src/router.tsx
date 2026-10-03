@@ -3,6 +3,7 @@ import Home from './pages/Home'
 import Forbidden from './pages/Forbidden'
 import Certificates from './pages/Certificates'
 import AdminUsers from './pages/AdminUsers'
+import Submissions from './pages/Submissions'
 import AdminCourses from './pages/AdminCourses'
 import AdminFraudFlags from './pages/AdminFraudFlags'
 import NotFound from './pages/NotFound'
@@ -95,6 +96,14 @@ function AppRoutes(): React.ReactElement {
         element={
           <ProtectedRoute allowedRoles={['admin']}>
             <AdminFraudFlags />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/submissions"
+        element={
+          <ProtectedRoute allowedRoles={['instructor']}>
+            <Submissions />
           </ProtectedRoute>
         }
       />
