@@ -14,6 +14,7 @@ interface ListCoursesParams {
   limit?: number
   search?: string | null
   level?: CourseLevel | null
+  category?: string | null
 }
 
 export const listCourses = async (
@@ -24,6 +25,7 @@ export const listCourses = async (
   if (params.limit) query.set('limit', String(params.limit))
   if (params.search) query.set('search', params.search)
   if (params.level) query.set('level', params.level)
+  if (params.category) query.set('category', params.category)
 
   const suffix = query.toString() ? `?${query.toString()}` : ''
   return apiGetRaw<PaginatedResponse<Course>>(`/courses${suffix}`)

@@ -1,7 +1,8 @@
 import { useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import SchoolIcon from '@mui/icons-material/School'
-import CategoryIcon from '@mui/icons-material/Category'
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
+import { getCategoryMeta } from '../../config/categories'
 import AutoStoriesIcon from '@mui/icons-material/AutoStories'
 import CastForEducationIcon from '@mui/icons-material/CastForEducation'
 import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium'
@@ -54,7 +55,7 @@ const Home: React.FC = () => {
   const { user } = useAuth()
   const navigate = useNavigate()
   const theme = useTheme()
-  const { data, isLoading, isError, error } = useCourses({ search: '', level: null })
+  const { data, isLoading, isError, error } = useCourses({ search: '', level: null, category: null })
   const popular = usePopularCourses(HIGHLIGHT_COUNT)
   const instructors = useTopInstructors(HIGHLIGHT_COUNT)
 
@@ -130,17 +131,23 @@ const Home: React.FC = () => {
           <S.Section id="categories">
             <S.SectionTitle>Browse by category</S.SectionTitle>
             <S.CategoryGrid>
-              {categories.map((category) => (
-                <S.CategoryCard key={category.name}>
-                  <S.IconBadge aria-hidden="true">
-                    <CategoryIcon fontSize="inherit" />
-                  </S.IconBadge>
-                  <S.CardTitle>{category.name}</S.CardTitle>
-                  <S.CardText>
-                    {category.count} {category.count === 1 ? 'course' : 'courses'}
-                  </S.CardText>
-                </S.CategoryCard>
-              ))}
+              {categories.map((category) => {
+                const meta = getCategoryMeta(category.name)
+                const Icon = meta.icon
+                return (
+                  <S.CategoryCard key={category.name} to={`/courses?category=${encodeURIComponent(category.name)}`}>
+                    <S.CategoryIconBadge $color={meta.color} aria-hidden="true">
+                      <Icon fontSize="inherit" />
+                    </S.CategoryIconBadge>
+                    <S.CardTitle>{category.name}</S.CardTitle>
+                    <S.CardText>{meta.tagline}</S.CardText>
+                    <S.CategoryFooter>
+                      {category.count} {category.count === 1 ? 'course' : 'courses'}
+                      <ArrowForwardIcon fontSize="inherit" aria-hidden="true" />
+                    </S.CategoryFooter>
+                  </S.CategoryCard>
+                )
+              })}
             </S.CategoryGrid>
           </S.Section>
         )}

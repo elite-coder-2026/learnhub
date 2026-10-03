@@ -1,5 +1,6 @@
 import styled from 'styled-components'
 import { Link } from 'react-router-dom'
+import type { AppTheme } from '../../theme'
 
 export const Page = styled.div`
   display: flex;
@@ -200,17 +201,60 @@ export const SectionTitle = styled.h2`
 
 export const CategoryGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(${({ theme }) => theme.sizes.dropdown}, 100%), 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: ${({ theme }) => theme.spacing[4]};
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.lg}) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
+    grid-template-columns: minmax(0, 1fr);
+  }
 `
 
-export const CategoryCard = styled.div`
+export const CategoryCard = styled(Link)`
   ${cardBase}
   gap: ${({ theme }) => theme.spacing[2]};
   padding: ${({ theme }) => theme.spacing[5]};
+  color: inherit;
+  text-decoration: none;
   background: ${({ theme }) => theme.colors.surface};
   border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: ${({ theme }) => theme.radii.lg};
+  transition: border-color ${({ theme }) => theme.transitions.fast},
+    box-shadow ${({ theme }) => theme.transitions.fast},
+    transform ${({ theme }) => theme.transitions.fast};
+
+  &:hover,
+  &:focus-visible {
+    border-color: ${({ theme }) => theme.colors.primary};
+    box-shadow: ${({ theme }) => theme.shadows.cardHover};
+    transform: translateY(-${({ theme }) => theme.spacing[1]});
+  }
+`
+
+export const CategoryIconBadge = styled.span<{ $color: (theme: AppTheme) => string }>`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: ${({ theme }) => theme.sizes.iconBadge};
+  height: ${({ theme }) => theme.sizes.iconBadge};
+  font-size: ${({ theme }) => theme.fontSizes.xl};
+  color: ${({ theme }) => theme.colors.surface};
+  background: ${({ $color, theme }) => $color(theme)};
+  border-radius: ${({ theme }) => theme.radii.md};
+`
+
+export const CategoryFooter = styled.span`
+  display: inline-flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[1]};
+  margin-top: auto;
+  padding-top: ${({ theme }) => theme.spacing[2]};
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  font-weight: ${({ theme }) => theme.fontWeights.semibold};
+  color: ${({ theme }) => theme.colors.primary};
 `
 
 export const Footer = styled.footer`

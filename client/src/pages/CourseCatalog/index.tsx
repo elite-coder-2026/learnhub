@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import CloseIcon from '@mui/icons-material/Close'
 import AddIcon from '@mui/icons-material/Add'
 import * as S from './CourseCatalog.styles'
 import AppShell from '../../components/AppShell'
@@ -42,6 +43,8 @@ const sortCourses = (courses: Course[], sort: SortOption): Course[] =>
 const CourseCatalog: React.FC = () => {
   const { user } = useAuth()
   const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const category = searchParams.get('category')
   const [search, setSearch] = useState('')
   const [level, setLevel] = useState<LevelFilter>('all')
   const [sort, setSort] = useState<SortOption>('newest')
@@ -50,6 +53,7 @@ const CourseCatalog: React.FC = () => {
   const { data, isLoading, isError, error, fetchNextPage, hasNextPage, isFetchingNextPage } = useCourses({
     search: debouncedSearch,
     level: level === 'all' ? null : level,
+    category,
   })
   const { progressByCourseId } = useEnrollmentProgress()
 
@@ -57,11 +61,12 @@ const CourseCatalog: React.FC = () => {
     () => sortCourses(data?.pages.flatMap((page) => page.data) ?? [], sort),
     [data, sort],
   )
-  const hasActiveFilters = search.trim() !== '' || level !== 'all'
+  const hasActiveFilters = search.trim() !== '' || level !== 'all' || category !== null
 
   const clearFilters = (): void => {
     setSearch('')
     setLevel('all')
+    setSearchParams({})
   }
 
   return (
@@ -94,6 +99,12 @@ const CourseCatalog: React.FC = () => {
           <S.FilterCard>
             <Dropdown<LevelFilter> label="Level" options={LEVEL_OPTIONS} value={level} onChange={setLevel} />
             <Dropdown<SortOption> label="Sort" options={SORT_OPTIONS} value={sort} onChange={setSort} />
+            {category && (
+              <S.CategoryChip type="button" onClick={() => setSearchParams({})} aria-label={`Remove category filter ${category}`}>
+                {category}
+                <CloseIcon fontSize="inherit" />
+              </S.CategoryChip>
+            )}
           </S.FilterCard>
 
           <CourseGrid
