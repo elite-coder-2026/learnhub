@@ -1,7 +1,6 @@
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import * as authQueries from '../queries/auth.query'
-import * as userQueries from '../queries/user.query'
 import { RegisterInput, LoginInput, AuthResult } from '../types/auth.type'
 import { UnauthorizedError, ValidationError } from '../utils/errors'
 import { JWT_SECRET, JWT_EXPIRES_IN } from '../config/env'
@@ -22,9 +21,8 @@ export const register = async (input: RegisterInput): Promise<AuthResult> => {
   if (existingUser) throw new ValidationError('Email is already registered')
 
   const passwordHash = await bcrypt.hash(input.password, SALT_ROUNDS)
-  const user = await userQueries.createUser(
+  const user = await authQueries.createUser(
     input.email,
-    passwordHash,
     passwordHash,
     input.firstName,
     input.lastName,
@@ -40,6 +38,8 @@ export const login = async (input: LoginInput): Promise<AuthResult> => {
 
   const isValidPassword = await bcrypt.compare(input.password, user.password_hash)
   if (!isValidPassword) throw new UnauthorizedError('Invalid email or password')
+
+  await authQueries.recordLogin(user.id)
 
   return { token: signToken(user.id, user.user_role), userId: user.id }
 }
