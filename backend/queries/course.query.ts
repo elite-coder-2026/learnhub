@@ -1,6 +1,6 @@
 import { PoolClient } from 'pg'
 import { pool } from '../config/db'
-import { Course, CourseAnalytics, CourseSearchFilters, Module, Lesson } from '../types/course.type'
+import { Course, CourseAnalytics, Module, Lesson } from '../types/course.type'
 
 export const insertCourse = async (
     client: PoolClient,
@@ -60,27 +60,6 @@ export const findCoursesPaginated = async (
      ORDER BY id 
      LIMIT $2`,
     [cursor, limit]
-  )
-  return result.rows
-}
-
-export const searchCoursesPaginated = async (
-  filters: CourseSearchFilters,
-  cursor: string | null,
-  limit: number
-): Promise<Course[]> => {
-  const result = await pool.query<Course>(
-    `SELECT id, instructor_id, title, description, category, level, created_at, updated_at
-     FROM nx.courses
-     WHERE deleted_at IS NULL
-       AND ($1::text IS NULL OR title ILIKE '%' || $1 || '%' OR description ILIKE '%' || $1 || '%')
-       AND ($2::text IS NULL OR category = $2)
-       AND ($3::uuid IS NULL OR instructor_id = $3::uuid)
-       AND ($4::text IS NULL OR level::text = $4::text)
-       AND ($5::uuid IS NULL OR id > $5::uuid)
-     ORDER BY id 
-     LIMIT $6`,
-    [filters.search, filters.category, filters.instructorId, filters.level, cursor, limit]
   )
   return result.rows
 }
