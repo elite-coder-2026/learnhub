@@ -34,28 +34,28 @@ Each layer has one responsibility. Nothing crosses the boundary.
 
 ### Layer responsibilities
 
-**Route** (`src/routes/`)
+**Route** (`routes/`)
 
 - Register the endpoint and HTTP method
 - Apply middleware (auth, validation)
 - Call the controller
 - Nothing else
 
-**Controller** (`src/controllers/`)
+**Controller** (`controllers/`)
 
 - Extract and validate request data
 - Call the service
 - Format and return the HTTP response
 - No SQL, no business logic
 
-**Service** (`src/services/`)
+**Service** (`services/`)
 
 - Business logic only
 - Orchestrates one or more query calls
 - No SQL, no HTTP concern
 - Returns typed domain objects
 
-**Query** (`src/queries/`)
+**Query** (`queries/`)
 
 - Raw SQL only
 - One function per query
@@ -67,22 +67,22 @@ Each layer has one responsibility. Nothing crosses the boundary.
 ## File Naming Conventions
 
 ```
-src/
+backend/
 ├── routes/
 │   └── user.routes.ts
 ├── controllers/
 │   └── user.controller.ts
 ├── services/
-│   └── user.ervice.ts
+│   └── user.service.ts
 ├── queries/
-│   └── user.queries.ts
+│   └── user.query.ts
 ├── middleware/
-│   ├── authMiddleware.ts
-│   └── validateMiddleware.ts
+│   └── authMiddleware.ts
 ├── types/
-│   └── user.ts
+│   └── user.type.ts
 ├── config/
-│   └── db.ts
+│   ├── db.ts
+│   └── env.ts
 └── utils/
     └── errors.ts
 ```
@@ -94,9 +94,9 @@ src/
 Every query function follows this pattern exactly:
 
 ```ts
-// src/queries/userQueries.ts
+// queries/user.query.ts
 import { pool } from '../config/db'
-import { User } from '../types/user'
+import { User } from '../types/user.type'
 
 export  const findUserById = async (id: string): Promise<User | null> =>{
   const result = await pool.query<User>(
@@ -139,9 +139,9 @@ export async function findUsersPaginated(
 ## Service Layer Pattern
 
 ```ts
-// src/services/userService.ts
-import * as userQueries from '../queries/userQueries'
-import { User } from '../types/user'
+// services/user.service.ts
+import * as userQueries from '../queries/user.query'
+import { User } from '../types/user.type'
 import { NotFoundError } from '../utils/errors'
 
 export async function getUserById(id: string): Promise<User> {
@@ -156,9 +156,9 @@ export async function getUserById(id: string): Promise<User> {
 ## Controller Layer Pattern
 
 ```ts
-// src/controllers/userController.ts
+// controllers/user.controller.ts
 import { Request, Response } from 'express'
-import * as userService from '../services/userService'
+import * as userService from '../services/user.service'
 
 export async function getUser(req: Request, res: Response): Promise<void> {
   try {
@@ -180,9 +180,9 @@ export async function getUser(req: Request, res: Response): Promise<void> {
 ## Route Layer Pattern
 
 ```ts
-// src/routes/userRoutes.ts
+// routes/user.routes.ts
 import { Router } from 'express'
-import { getUser } from '../controllers/userController'
+import { getUser } from '../controllers/user.controller'
 import { requireAuth } from '../middleware/authMiddleware'
 
 const router = Router()
@@ -196,7 +196,7 @@ export default router
 
 ## TypeScript Conventions
 
-- Every table has a corresponding interface in `src/types/`
+- Every table has a corresponding interface in `types/`
 - Every query function has explicit return type annotation
 - No `as any` casts anywhere
 - Strict null checks — handle null explicitly, never assume a row exists
@@ -204,7 +204,7 @@ export default router
 ### Type pattern
 
 ```ts
-// src/types/user.ts
+// types/user.type.ts
 export interface User {
   id: string           // UUID
   email: string
@@ -262,7 +262,7 @@ The cursor is always the `id` of the last row returned. Pass it as a query param
 ## Error Types
 
 ```ts
-// src/utils/errors.ts
+// utils/errors.ts
 export class NotFoundError extends Error {
   constructor(message: string) {
     super(message)
@@ -296,7 +296,7 @@ PORT=3000
 FRAUD_API_URL=http://localhost:8001
 ```
 
-Never access `process.env` directly in business logic — always import from `src/config/`.
+Never access `process.env` directly in business logic — always import from `config/env.ts`.
 
 ---
 
