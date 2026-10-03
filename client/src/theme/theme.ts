@@ -84,6 +84,10 @@ export const theme = {
     chart: '240px',
     statCardSkeleton: '88px',
     courseCardSkeleton: '152px',
+    courseCardMin: '280px',
+    searchInput: '320px',
+    dropdown: '200px',
+    dropdownMenuMax: '240px',
   },
   breakpoints: {
     sm: '640px',
@@ -95,6 +99,9 @@ export const theme = {
     normal: '0.2s ease',
   },
   zIndex: {
+    cardLink: 1,
+    cardAction: 2,
+    dropdown: 20,
     topBar: 10,
   },
 } as const

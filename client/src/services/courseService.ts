@@ -1,6 +1,7 @@
 import { apiGet, apiGetRaw, apiPost } from './apiClient'
 import type {
   Course,
+  CourseLevel,
   CourseWithStructure,
   CreateCourseInput,
   Enrollment,
@@ -10,14 +11,18 @@ import type { PaginatedResponse } from '../types/pagination'
 interface ListCoursesParams {
   cursor?: string | null
   limit?: number
+  search?: string | null
+  level?: CourseLevel | null
 }
 
-export function listCourses(
+export const listCourses = async (
   params: ListCoursesParams,
-): Promise<PaginatedResponse<Course>> {
+): Promise<PaginatedResponse<Course>> => {
   const query = new URLSearchParams()
   if (params.cursor) query.set('cursor', params.cursor)
   if (params.limit) query.set('limit', String(params.limit))
+  if (params.search) query.set('search', params.search)
+  if (params.level) query.set('level', params.level)
 
   const suffix = query.toString() ? `?${query.toString()}` : ''
   return apiGetRaw<PaginatedResponse<Course>>(`/courses${suffix}`)

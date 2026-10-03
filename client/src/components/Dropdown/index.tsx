@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import * as S from './Dropdown.styles'
 
 export interface DropdownOption<T extends string = string> {
@@ -53,8 +54,10 @@ function Dropdown<T extends string = string>({
           aria-labelledby={label ? labelId : undefined}
           onClick={() => setIsOpen((open) => !open)}
         >
-          <span>{selected ? selected.label : placeholder}</span>
-          <span aria-hidden="true">{isOpen ? '▲' : '▼'}</span>
+          <S.TriggerText>{selected ? selected.label : placeholder}</S.TriggerText>
+          <S.Chevron $isOpen={isOpen} aria-hidden="true">
+            <ExpandMoreIcon fontSize="inherit" />
+          </S.Chevron>
         </S.Trigger>
         {isOpen && (
           <S.Menu role="listbox">
