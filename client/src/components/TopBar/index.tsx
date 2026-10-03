@@ -1,4 +1,4 @@
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import MenuIcon from '@mui/icons-material/Menu'
 import { useAuth } from '../../hooks/useAuth'
 import { useCurrentUser } from '../../hooks/useCurrentUser'
@@ -24,6 +24,12 @@ const TopBar: React.FC<TopBarProps> = ({ navItems, onToggleSidebar }) => {
   const { user, logout } = useAuth()
   const { data: currentUser } = useCurrentUser()
   const { pathname } = useLocation()
+  const navigate = useNavigate()
+
+  const handleLogout = (): void => {
+    navigate('/', { replace: true })
+    logout()
+  }
 
   return (
     <S.Bar>
@@ -37,7 +43,7 @@ const TopBar: React.FC<TopBarProps> = ({ navItems, onToggleSidebar }) => {
             {getInitials(currentUser?.first_name ?? null, currentUser?.last_name ?? null, user.role)}
           </S.Avatar>
           <S.RoleBadge>{user.role}</S.RoleBadge>
-          <Button variant="ghost" size="sm" onClick={logout}>
+          <Button variant="ghost" size="sm" onClick={handleLogout}>
             Log out
           </Button>
         </S.UserArea>
