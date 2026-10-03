@@ -1,5 +1,7 @@
 import { Routes, Route } from 'react-router-dom'
 import Home from './pages/Home'
+import Forbidden from './pages/Forbidden'
+import NotFound from './pages/NotFound'
 import Register from './pages/Register'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
@@ -14,6 +16,7 @@ function AppRoutes(): React.ReactElement {
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/forbidden" element={<Forbidden />} />
       <Route path="/login" element={<Login />} />
       <Route
         path="/dashboard"
@@ -59,6 +62,7 @@ function AppRoutes(): React.ReactElement {
           </ProtectedRoute>
         }
       />
+      <Route path="*" element={<NotFound />} />
     </Routes>
   )
 }
