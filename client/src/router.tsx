@@ -2,6 +2,9 @@ import { Routes, Route } from 'react-router-dom'
 import Home from './pages/Home'
 import Forbidden from './pages/Forbidden'
 import Certificates from './pages/Certificates'
+import AdminUsers from './pages/AdminUsers'
+import AdminCourses from './pages/AdminCourses'
+import AdminFraudFlags from './pages/AdminFraudFlags'
 import NotFound from './pages/NotFound'
 import Register from './pages/Register'
 import Login from './pages/Login'
@@ -68,6 +71,30 @@ function AppRoutes(): React.ReactElement {
         element={
           <ProtectedRoute allowedRoles={['student']}>
             <Certificates />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/users"
+        element={
+          <ProtectedRoute allowedRoles={['admin']}>
+            <AdminUsers />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/courses"
+        element={
+          <ProtectedRoute allowedRoles={['admin']}>
+            <AdminCourses />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/fraud-flags"
+        element={
+          <ProtectedRoute allowedRoles={['admin']}>
+            <AdminFraudFlags />
           </ProtectedRoute>
         }
       />

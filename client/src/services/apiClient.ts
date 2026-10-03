@@ -73,3 +73,12 @@ export const apiGetBlob = async (path: string, token: string): Promise<Blob> => 
   }
   return response.blob()
 }
+
+export const apiPut = async <T>(path: string, payload: unknown, token: string): Promise<T> => {
+  const body = await request<{ data: T }>(
+    path,
+    { method: 'PUT', body: payload === undefined ? undefined : JSON.stringify(payload) },
+    token,
+  )
+  return body.data
+}
