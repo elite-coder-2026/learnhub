@@ -17,7 +17,10 @@ const AppShell: React.FC<AppShellProps> = ({ navItems, children }) => {
         <Sidebar items={navItems} isCollapsed={isSidebarCollapsed} />
       </S.SidebarArea>
       <S.TopBarArea>
-        <TopBar onToggleSidebar={() => setIsSidebarCollapsed((prev) => !prev)} />
+        <TopBar
+          navItems={navItems}
+          onToggleSidebar={() => setIsSidebarCollapsed((prev) => !prev)}
+        />
       </S.TopBarArea>
       <S.ContentArea>{children}</S.ContentArea>
     </S.Grid>

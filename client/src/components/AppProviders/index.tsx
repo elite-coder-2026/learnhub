@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ThemeProvider } from 'styled-components'
 import { BrowserRouter } from 'react-router-dom'
 import { theme } from '../../theme'
+import GlobalStyle from '../../theme/GlobalStyle'
 import { AuthProvider } from '../../hooks/useAuth'
 import ErrorBoundary from '../ErrorBoundary'
 import { ToastProvider } from '../Toast'
@@ -16,6 +17,7 @@ const queryClient = new QueryClient()
 const AppProviders: React.FC<AppProvidersProps> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider theme={theme}>
+      <GlobalStyle />
       <AuthProvider>
         <BrowserRouter>
           <ErrorBoundary>

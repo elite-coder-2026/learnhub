@@ -1,23 +1,45 @@
+import { useLocation } from 'react-router-dom'
+import MenuIcon from '@mui/icons-material/Menu'
 import { useAuth } from '../../hooks/useAuth'
+import { useCurrentUser } from '../../hooks/useCurrentUser'
 import Button from '../Button'
+import type { SidebarNavItem } from '../Sidebar'
 import * as S from './TopBar.styles'
 
 interface TopBarProps {
+  navItems: SidebarNavItem[]
   onToggleSidebar: () => void
 }
 
-const TopBar: React.FC<TopBarProps> = ({ onToggleSidebar }) => {
+const findPageTitle = (navItems: SidebarNavItem[], pathname: string): string => {
+  const match = navItems
+    .filter((item) => pathname === item.to || pathname.startsWith(`${item.to}/`))
+    .sort((a, b) => b.to.length - a.to.length)[0]
+  return match?.label ?? 'LearnHub'
+}
+
+const getInitials = (firstName: string | null, lastName: string | null, fallback: string): string => {
+  const initials = `${firstName?.charAt(0) ?? ''}${lastName?.charAt(0) ?? ''}`.toUpperCase()
+  return initials || fallback.charAt(0).toUpperCase()
+}
+
+const TopBar: React.FC<TopBarProps> = ({ navItems, onToggleSidebar }) => {
   const { user, logout } = useAuth()
+  const { data: currentUser } = useCurrentUser()
+  const { pathname } = useLocation()
 
   return (
     <S.Bar>
       <S.ToggleButton type="button" onClick={onToggleSidebar} aria-label="Toggle sidebar">
-        ☰
+        <MenuIcon fontSize="inherit" />
       </S.ToggleButton>
-      <S.Brand>LearnHub</S.Brand>
+      <S.Title>{findPageTitle(navItems, pathname)}</S.Title>
       {user && (
         <S.UserArea>
-          <S.RoleText>{user.role}</S.RoleText>
+          <S.Avatar aria-hidden="true">
+            {getInitials(currentUser?.first_name ?? null, currentUser?.last_name ?? null, user.role)}
+          </S.Avatar>
+          <S.RoleBadge>{user.role}</S.RoleBadge>
           <Button variant="ghost" size="sm" onClick={logout}>
             Log out
           </Button>
