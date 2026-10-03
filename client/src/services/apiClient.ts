@@ -58,3 +58,18 @@ export async function apiPost<T>(
 export function apiDelete(path: string, token?: string | null): Promise<void> {
   return request<void>(path, { method: 'DELETE' }, token)
 }
+
+export const apiGetBlob = async (path: string, token: string): Promise<Blob> => {
+  const response = await fetch(`${API_URL}${path}`, { headers: { Authorization: `Bearer ${token}` } })
+  if (!response.ok) {
+    let message = `Request failed (${response.status})`
+    try {
+      const body = (await response.json()) as ApiErrorBody
+      if (body.error) message = body.error
+    } catch {
+      message = `Request failed (${response.status})`
+    }
+    throw new Error(message)
+  }
+  return response.blob()
+}

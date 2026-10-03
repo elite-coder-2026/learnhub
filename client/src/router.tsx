@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router-dom'
 import Home from './pages/Home'
 import Forbidden from './pages/Forbidden'
+import Certificates from './pages/Certificates'
 import NotFound from './pages/NotFound'
 import Register from './pages/Register'
 import Login from './pages/Login'
@@ -59,6 +60,14 @@ function AppRoutes(): React.ReactElement {
         element={
           <ProtectedRoute>
             <CoursePlayer />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/certificates"
+        element={
+          <ProtectedRoute allowedRoles={['student']}>
+            <Certificates />
           </ProtectedRoute>
         }
       />
