@@ -2,11 +2,10 @@ import 'dotenv/config'
 import { pool } from '../../config/db'
 import * as authQueries from '../../queries/auth.query'
 import * as courseQueries from '../../queries/course.query'
+import * as enrollmentQueries from '../../queries/enrollment.query'
 import * as authService from '../../services/auth.service'
 import * as courseService from '../../services/course.service'
-import * as enrollmentService from '../../services/enrollment.service'
 import { CourseLevel } from '../../types/course.type'
-import { ValidationError } from '../../utils/errors'
 
 interface SeedUser {
   email: string
@@ -204,13 +203,13 @@ const seed = async (): Promise<void> => {
   for (const title of STUDENT_ENROLLMENTS) {
     const courseId = courseIds.get(title)
     if (!courseId) throw new Error(`Seed course "${title}" is missing`)
-    try {
-      await enrollmentService.enrollInCourse(studentId, courseId)
-      console.log(`  enrolled student in "${title}"`)
-    } catch (error) {
-      if (!(error instanceof ValidationError)) throw error
+    const existing = await enrollmentQueries.findEnrollmentByStudentAndCourse(studentId, courseId)
+    if (existing) {
       console.log(`  student already enrolled in "${title}"`)
+      continue
     }
+    await enrollmentQueries.insertEnrollment(studentId, courseId)
+    console.log(`  enrolled student in "${title}" (seeded as a completed purchase)`)
   }
 
   console.log('Seed complete. All seed accounts use password123:')

@@ -74,13 +74,19 @@ const CourseDetail: React.FC = () => {
                   </>
                 ) : (
                   <>
-                    <Button
-                      onClick={() => (user ? enroll.mutate() : navigate('/login'))}
-                      isLoading={enroll.isPending}
-                      disabled={dashboard.isLoading}
-                    >
-                      Enroll
-                    </Button>
+                    {course.data.price_cents > 0 ? (
+                      <Button variant="secondary" disabled>
+                        Checkout coming soon
+                      </Button>
+                    ) : (
+                      <Button
+                        onClick={() => (user ? enroll.mutate() : navigate('/login'))}
+                        isLoading={enroll.isPending}
+                        disabled={dashboard.isLoading}
+                      >
+                        Enroll
+                      </Button>
+                    )}
                     {enroll.isError && (
                       <InlineError message={enroll.error.message} />
                     )}

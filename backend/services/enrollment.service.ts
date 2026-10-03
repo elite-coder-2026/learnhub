@@ -36,6 +36,9 @@ export const searchCourses = async (
 export const enrollInCourse = async (studentId: string, courseId: string): Promise<Enrollment> => {
   const course = await courseQueries.findCourseById(courseId)
   if (!course) throw new NotFoundError(`Course ${courseId} not found`)
+  if (course.price_cents > 0) {
+    throw new ValidationError('This course requires payment, and checkout is not available yet')
+  }
 
   const existing = await enrollmentQueries.findEnrollmentByStudentAndCourse(studentId, courseId)
   if (existing) throw new ValidationError('Already enrolled in this course')

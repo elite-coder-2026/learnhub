@@ -85,9 +85,15 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, to, viewerRole, progres
           )}
           {viewerRole === 'student' && !isEnrolled && (
             <S.Action>
-              <Button size="sm" isLoading={enroll.isPending} onClick={() => enroll.mutate()}>
-                Enroll
-              </Button>
+              {course.price_cents > 0 ? (
+                <Button size="sm" variant="secondary" disabled>
+                  Checkout coming soon
+                </Button>
+              ) : (
+                <Button size="sm" isLoading={enroll.isPending} onClick={() => enroll.mutate()}>
+                  Enroll
+                </Button>
+              )}
             </S.Action>
           )}
           {viewerRole !== 'student' && (
