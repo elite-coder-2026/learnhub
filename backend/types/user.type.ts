@@ -1,7 +1,6 @@
 export interface User {
   id: string
   email: string
-  password: string | null
   password_hash: string | null
   avatar_url: string | null
   user_role: string
@@ -9,6 +8,7 @@ export interface User {
   last_name: string | null
   is_active: boolean
   is_email_verified: boolean
+  last_login_at: Date | null
   created_at: Date
   updated_at: Date
 }
